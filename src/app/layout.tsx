@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -24,9 +25,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className="h-screen w-screen flex items-center justify-center relative">
+        <Image
+          src="/background_jemparingan.webp"
+          alt="Jemparingan background"
+          fill
+          className="object-cover md:object-contain w-[414px] h-[791px]"
+        />
         {children}
       </body>
     </html>
