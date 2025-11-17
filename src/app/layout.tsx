@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -25,14 +26,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="h-screen w-screen flex items-center justify-center relative">
+      <body className="relative flex items-center justify-center h-screen w-screen overflow-hidden">
         <Image
           src="/background_jemparingan.webp"
           alt="Jemparingan background"
-          fill
-          className="object-cover md:object-contain w-[414px] h-[791px]"
+          width={1000}
+          height={1000}
+          className="object-cover absolute !aspect-9/16 !h-screen !w-auto"
         />
-        {children}
+          {/* <Footer /> */}
+        <div className="absolute z-10 flex flex-col items-center justify-center h-full w-full">
+          {children}
+        </div>
       </body>
     </html>
   );

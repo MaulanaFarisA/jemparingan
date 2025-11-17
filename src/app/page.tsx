@@ -1,5 +1,6 @@
 'use client';
 
+
 import supabase from '@/components/lib/db';
 import { useEffect, useState } from 'react';
 import type { IProfile } from '../entities/profile';
@@ -26,6 +27,12 @@ const Home = () => {
     <div>
       <div>Home</div>
     </div>
+
+export default function Home() {
+  return (
+    <Container className="">
+
+    </Container>
   );
 };
 
