@@ -3,6 +3,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  aspect-ratio: 9/16;
 }
 
 @theme inline {
