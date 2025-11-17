@@ -1,10 +1,32 @@
-import Container from "@/components/lib/ui/container";
+'use client';
 
-export default function Home() {
+import supabase from '@/components/lib/db';
+import { useEffect, useState } from 'react';
+import type { IProfile } from '../entities/profile';
+
+const Home = () => {
+  const [profiles, setProfiles] = useState<IProfile[]>([]);
+
+  useEffect(() => {
+    const fetchProfiles = async () => {
+      console.log('Fetching profiles...');
+      const { data, error } = await supabase.from('profile').select('*');
+      if(error) {
+        console.log('Error:', error);
+      } else {
+        console.log('Data from Supabase:', data);
+        setProfiles(data);
+      }
+    };
+    fetchProfiles();
+  }, []);
+
+  console.log('Current profiles state:', profiles);
   return (
-    <Container className="">
-      <h1 className="text-4xl font-bold">Welcome to My Website</h1>
-      <p className="mt-4">This is a simple container component.</p>
-    </Container>
+    <div>
+      <div>Home</div>
+    </div>
   );
-}
+};
+
+export default Home;
