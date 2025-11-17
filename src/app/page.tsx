@@ -1,22 +1,22 @@
 'use client';
 
-
 import supabase from '@/components/lib/db';
 import { useEffect, useState } from 'react';
 import type { IProfile } from '../entities/profile';
+import Container from '@/components/lib/ui/container';
 
-const Home = () => {
+export default function Home() {
   const [profiles, setProfiles] = useState<IProfile[]>([]);
 
   useEffect(() => {
     const fetchProfiles = async () => {
       console.log('Fetching profiles...');
       const { data, error } = await supabase.from('profile').select('*');
-      if(error) {
+      if (error) {
         console.log('Error:', error);
       } else {
         console.log('Data from Supabase:', data);
-        setProfiles(data);
+        setProfiles(data ?? []);
       }
     };
     fetchProfiles();
@@ -24,16 +24,10 @@ const Home = () => {
 
   console.log('Current profiles state:', profiles);
   return (
-    <div>
-      <div>Home</div>
-    </div>
-
-export default function Home() {
-  return (
     <Container className="">
+      <div>
 
+      </div>
     </Container>
   );
-};
-
-export default Home;
+}
