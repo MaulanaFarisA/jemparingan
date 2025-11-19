@@ -13,7 +13,7 @@ type AddScoreParams = {
 type ActionResponse = {
   success: boolean;
   message: string;
-  data?: any; 
+  data?: string; 
 };
 
 export async function addScore({ 
