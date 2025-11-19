@@ -4,6 +4,7 @@ import supabase from '@/components/lib/db';
 import { useEffect, useState } from 'react';
 import type { IProfile } from '../entities/profile';
 import Container from '@/components/lib/ui/container';
+import PanitiaInput from '@/components/lib/ui/panitia-input';
 
 export default function Home() {
   const [profiles, setProfiles] = useState<IProfile[]>([]);
@@ -11,7 +12,7 @@ export default function Home() {
   useEffect(() => {
     const fetchProfiles = async () => {
       console.log('Fetching profiles...');
-      const { data, error } = await supabase.from('profile').select('*');
+      const { data, error } = await supabase.from('profiles').select('*');
       if (error) {
         console.log('Error:', error);
       } else {
@@ -25,9 +26,7 @@ export default function Home() {
   console.log('Current profiles state:', profiles);
   return (
     <Container className="">
-      <div>
-
-      </div>
+      <PanitiaInput />
     </Container>
   );
 }
