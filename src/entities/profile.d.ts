@@ -1,5 +1,5 @@
 interface IProfile {
-    id: number;
+    id: string;
     email: string;
     role: string;
     avatar_url:string;

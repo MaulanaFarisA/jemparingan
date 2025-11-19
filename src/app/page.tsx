@@ -12,7 +12,7 @@ export default function Home() {
   useEffect(() => {
     const fetchProfiles = async () => {
       console.log('Fetching profiles...');
-      const { data, error } = await supabase.from('profile').select('*');
+      const { data, error } = await supabase.from('profiles').select('*');
       if (error) {
         console.log('Error:', error);
       } else {
