@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/lib/ui/button";
+import { Button } from "@/components/lib/ui/Button";
 import {
   DropdownMenu,
   DropdownMenuTrigger,

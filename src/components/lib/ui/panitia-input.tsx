@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { Button } from './button';
+import { Button } from './Button';
 import Link from 'next/dist/client/link';
 
 export default function PanitiaInput() {
@@ -12,7 +12,7 @@ export default function PanitiaInput() {
           width={184}
           height={184}
         />
-        <Link href="/scan"> 
+        <Link href="/scan">
           <Button className='px-[66px] py-4 text-[20px] mt-4 !hover:bg-[#321008]'>Masukkan Nilai</Button>
         </Link>
       </div>
