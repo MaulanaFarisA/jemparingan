@@ -33,7 +33,7 @@ export default function QRScanner({ onResult }: { onResult: (data: QRData) => vo
   };
 
   return (
-    <div className="w-[300px] h-[500px] rounded-xl overflow-hidden shadow-lg bg-gradient-to-b from-[#434343] to-[#242424]">
+    <div className="w-[346px] h-[611px] rounded-xl overflow-hidden shadow-lg bg-gradient-to-b from-[#434343] to-[#242424]">
       <Scanner
         onScan={handleScan}
         onError={(err: unknown) => console.error(err)}
