@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export default function ScanUlangPopup() {
+export default function ScanBarcodeHeader() {
   return (
     <div className="bg-[#AE6924] rounded-[20px] flex items-center" style={{ width: 346, height: 84 }}>
       <div
