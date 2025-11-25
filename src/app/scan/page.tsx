@@ -5,13 +5,11 @@ import TombolManualInput from "@/components/lib/ui/input_manual_tombol";
 import SimpanTombol from "@/components/lib/ui/simpan_tombol";
 import TigaTombol from "@/components/lib/ui/3_tombol";
 import SatuTombol from "@/components/lib/ui/1_tombol";
-// import BarcodeScanner from "@/components/lib/ui/barcode_scanner";
 
 export default function Page() {
   return (
     <main>  
-      <SatuTombol />
-      <TigaTombol />
+      
     </main>
   );
 }
