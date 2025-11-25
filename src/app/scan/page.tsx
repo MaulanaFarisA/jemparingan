@@ -6,6 +6,7 @@
   import { Button } from "@/components/lib/ui/button";
   import Link from "next/dist/client/link";
   import ScanBarcodeHeader from "@/components/lib/ui/scan_barcode_header";
+  import KunciPilihan from "@/components/lib/ui/kunci-pilihan";
 
 
   interface QRData {
@@ -41,44 +42,21 @@
 
         {/* HASIL SCAN */}
         {!showScanner && data && (
-          <div className="w-full max-w-md bg-white p-5 rounded-xl shadow">
+          <div className="w-full max-w-md bg-white p-5 rounded-xl shadow mb-6">
 
-            <h2 className="text-lg font-bold text-center mb-3">{data.nama}</h2>
+            <h2 className="text-2xl font-semibold text-center mb-3">{data.nama}</h2>
 
-            <p className="text-4xl font-extrabold text-blue-600 text-center mb-2">
+            <p className="text-6xl font-semibold text-black text-center">
               {data.panah}
             </p>
 
-            <p className="text-lg font-semibold text-center mb-4">
+            <p className="text-4xl font-semibold text-black text-center mb-4">
               Bandul {data.bandul}
             </p>
 
-            {/* PENILAIAN */}
-            <div className="grid grid-cols-5 gap-2 mb-4">
-              {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
-                <button
-                  key={num}
-                  onClick={() => setScores((s) => [...s, num])}
-                  className="bg-blue-500 text-white py-2 rounded-lg font-semibold hover:bg-blue-600"
-                >
-                  {num}
-                </button>
-              ))}
+            <div>
+              <KunciPilihan />
             </div>
-
-            {/* RIWAYAT */}
-            {scores.length > 0 && (
-              <p className="text-center text-lg mb-4">
-                <span className="font-semibold">Riwayat skor:</span> {scores.join(", ")}
-              </p>
-            )}
-
-            <button
-              onClick={resetScanner}
-              className="w-full bg-gray-200 py-2 rounded-lg font-semibold hover:bg-gray-300"
-            >
-              Scan Lagi
-            </button>
           </div>
         )}
         <Link href="/scan/manual">
