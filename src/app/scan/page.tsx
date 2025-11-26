@@ -53,18 +53,6 @@
               Bandul {data.bandul}
             </p>
 
-            {/* PENILAIAN */}
-            <div className="grid grid-cols-5 gap-2 mb-4">
-              {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
-                <button
-                  key={num}
-                  onClick={() => setScores((s) => [...s, num])}
-                  className="bg-blue-500 text-white py-2 rounded-lg font-semibold hover:bg-blue-600"
-                >
-                  {num}
-                </button>
-              ))}
-            </div>
 
             {/* RIWAYAT */}
             {scores.length > 0 && (

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import SelectDropdown from "@/components/lib/ui/dropdown";
 import SatuTombol from "@/components/lib/ui/1_tombol";
 import TigaTombol from "@/components/lib/ui/3_tombol";
+import SkoringPage from "@/app/scoring-auto/page";
 
 
 interface Peserta {
@@ -131,7 +132,6 @@ export default function ManualSkoringPage() {
   return (
     <div className="p-6 max-w-md mx-auto flex flex-col gap-6">
       {/* <h1 className="text-xl font-semibold text-center">Input Manual</h1> */}
-
       <SelectDropdown
         label="Pilih Bandul"
         options={bandulList}
