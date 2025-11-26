@@ -15,15 +15,15 @@ export default function ScanBarcodeHeader() {
         onClick={() => router.back()}
         className="bg-white rounded-full flex items-center justify-center cursor-pointer"
         style={{
-          width: 34,
-          height: 34,
-          marginLeft: 21,
+          width: 33,
+          height: 33,
+          marginLeft: 20,
         }}
       >
         <Image
           src="/chevron-left.svg"
           alt="Arrow Left"
-          width={21}
+          width={20}
           height={20}
         />
       </div>
