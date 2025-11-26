@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import SelectDropdown from "@/components/lib/ui/dropdown";
 import { Button } from "@/components/lib/ui/button";
 import SkorTombol from "@/components/lib/ui/skor_tombol";
+import Badge from "@/components/lib/ui/Badge";
+import ScoringHeader from "@/components/lib/ui/SkoringHeader";
 
 interface Peserta {
   id: string;
@@ -128,8 +130,10 @@ export default function ManualSkoringPage() {
   // RENDER
   // -------------------------------------------------------------------
   return (
-    <div className="p-6 max-w-md mx-auto flex flex-col gap-6">
-      {/* <h1 className="text-xl font-semibold text-center">Input Manual</h1> */}
+    <>
+      <ScoringHeader userName="Satya" round={1} />
+      <div className="p-6 max-w-md mx-auto flex flex-col gap-6">
+        {/* <h1 className="text-xl font-semibold text-center">Input Manual</h1> */}
 
       <SelectDropdown
         label="Pilih Bandul"
@@ -161,5 +165,6 @@ export default function ManualSkoringPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }
