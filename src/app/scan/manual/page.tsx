@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import SelectDropdown from "@/components/lib/ui/dropdown";
-import SatuTombol from "@/components/lib/ui/1_tombol";
-import TigaTombol from "@/components/lib/ui/3_tombol";
-import SkoringPage from "@/app/scoring-auto/page";
-
+import SkorTombol from "@/components/lib/ui/skor_tombol";
+import KunciPilihan from "@/components/lib/ui/kunci-pilihan";
+import FloatingNav from "@/components/lib/ui/FloatingNav";
 
 interface Peserta {
   id: string;
@@ -161,6 +160,9 @@ export default function ManualSkoringPage() {
           <SkorTombol />
         </div>
       </div>
+      <FloatingNav />
+      <KunciPilihan />
+
     </div>
   );
 }
