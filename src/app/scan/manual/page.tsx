@@ -158,8 +158,7 @@ export default function ManualSkoringPage() {
       <div className="flex flex-col items-center">
         <p className="text-2xl font-semibold">Pilih Skor : </p>
         <div className="flex flex-row gap-14 mt-3">
-          <SatuTombol />
-          <TigaTombol />
+          <SkorTombol />
         </div>
       </div>
     </div>
