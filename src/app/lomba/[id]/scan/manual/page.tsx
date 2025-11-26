@@ -208,9 +208,9 @@ export default function ManualSkoringPage() {
 
       if (result.success) {
         if (result.type === 'UPDATE') {
-           triggerPopup("update", `⚠️ Skor berhasil diperbarui menjadi ${selectedSkor}.`);
+          triggerPopup("update", `⚠️ Skor berhasil diperbarui menjadi ${selectedSkor}.`);
         } else {
-           triggerPopup("success", "✅ Skor berhasil disimpan!");
+          triggerPopup("success", "✅ Skor berhasil disimpan!");
         }
       } else {
         triggerPopup("error", result.message || "Gagal menyimpan.");
