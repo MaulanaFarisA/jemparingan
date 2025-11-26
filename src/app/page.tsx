@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import type { IProfile } from '../entities/profile';
 import Container from '@/components/lib/ui/container';
 import PanitiaInput from '@/components/lib/ui/panitia-input';
+import FloatingNav from '@/components/lib/ui/FloatingNav';
+import PanitiaHeader from '@/components/lib/ui/HeaderHome';
 
 export default function Home() {
   const [profiles, setProfiles] = useState<IProfile[]>([]);
@@ -26,7 +28,9 @@ export default function Home() {
   console.log('Current profiles state:', profiles);
   return (
     <Container className="">
+      <PanitiaHeader userName="Satya" />
       <PanitiaInput />
+      <FloatingNav />
     </Container>
   );
 }
