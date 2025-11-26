@@ -24,8 +24,8 @@ export default function Home() {
   }, []);
 
   const currentUser = profiles[0];
-  const userName = currentUser?.nama || (profiles.length === 0 ? "Memuat..." : "User");
-  const userImage = currentUser?.foto || null;
+  const userName = currentUser?.name || (profiles.length === 0 ? "Memuat..." : "User");
+  const userImage = currentUser?.avatar_url || null;
 
   const handleMasukNilai = () => {
     router.push('/scan');

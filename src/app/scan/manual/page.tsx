@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import SelectDropdown from "@/components/lib/ui/dropdown";
-import { Button } from "@/components/lib/ui/button";
-import SkorTombol from "@/components/lib/ui/skor_tombol";
+import { useEffect, useState } from 'react';
+import SelectDropdown from '@/components/lib/ui/dropdown';
+import { Button } from '@/components/lib/ui/button';
+import SkorTombol from '@/components/lib/ui/skor_tombol';
 
 interface Peserta {
   id: string;
@@ -24,6 +24,7 @@ export default function ManualSkoringPage() {
   const [selectedBandul, setSelectedBandul] = useState<number | null>(null);
   const [selectedPeserta, setSelectedPeserta] = useState<string | null>(null);
   const [selectedPanah, setSelectedPanah] = useState<string | null>(null);
+  const [selectedSkor, setSelectedSkor] = useState<number | null>(null);
 
   // -------------------------------------------------------------------
   // FETCH DATABASE
@@ -31,8 +32,8 @@ export default function ManualSkoringPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("/api/peserta");
-        if (!res.ok) throw new Error("Gagal fetch data peserta");
+        const res = await fetch('/api/peserta');
+        if (!res.ok) throw new Error('Gagal fetch data peserta');
 
         const data: Peserta[] = await res.json();
         setPesertaData(data);
@@ -43,7 +44,7 @@ export default function ManualSkoringPage() {
 
         setBandulList(uniqueBandul);
       } catch (e) {
-        console.error("ERROR FETCH:", e);
+        console.error('ERROR FETCH:', e);
       }
     }
 
@@ -96,9 +97,9 @@ export default function ManualSkoringPage() {
       panah = peserta.panah;
     }
     // if string, maybe "1,2,3" or "A"
-    else if (typeof peserta.panah === "string") {
-      if (peserta.panah.includes(",")) {
-        panah = peserta.panah.split(",").map((x) => x.trim());
+    else if (typeof peserta.panah === 'string') {
+      if (peserta.panah.includes(',')) {
+        panah = peserta.panah.split(',').map((x) => x.trim());
       } else {
         panah = [peserta.panah];
       }
@@ -113,14 +114,15 @@ export default function ManualSkoringPage() {
   // -------------------------------------------------------------------
   const handleSubmit = () => {
     if (!selectedBandul || !selectedPeserta || !selectedPanah) {
-      alert("Lengkapi semua pilihan terlebih dahulu!");
+      alert('Lengkapi semua pilihan terlebih dahulu!');
       return;
     }
 
-    console.log("Submit:", {
+    console.log('Submit:', {
       bandul: selectedBandul,
       peserta: selectedPeserta,
       panah: selectedPanah,
+      skor: selectedSkor,
     });
   };
 
@@ -155,11 +157,15 @@ export default function ManualSkoringPage() {
       />
 
       <div className="flex flex-col items-center">
-        <p className="text-2xl font-semibold">Pilih Skor : </p>
         <div className="flex flex-row gap-14 mt-3">
-          <SkorTombol />
+          <SkorTombol
+            selectedSkor={selectedSkor}
+            onSelect={(skor) => setSelectedSkor(skor)}
+          />
         </div>
       </div>
+
+      <Button onClick={handleSubmit}>Submit</Button>
     </div>
   );
 }
