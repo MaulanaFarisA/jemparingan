@@ -1,7 +1,7 @@
 // components/lib/ui/MenuCard.tsx
 
 import React from 'react';
-import { Button } from './Button';
+import { Button } from './button';
 
 interface MenuCardProps {
     icon: React.ReactNode;

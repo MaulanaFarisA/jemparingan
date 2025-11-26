@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import SelectDropdown from "@/components/lib/ui/dropdown";
-import { Button } from "@/components/lib/ui/Button";
+import { Button } from "@/components/lib/ui/button";
 import SatuTombol from "@/components/lib/ui/1_tombol";
 import TigaTombol from "@/components/lib/ui/3_tombol";
 

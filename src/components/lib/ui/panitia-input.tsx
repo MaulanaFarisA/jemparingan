@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { Button } from './Button';
+import { Button } from './button';
 import Link from 'next/dist/client/link';
 
 export default function PanitiaInput() {
