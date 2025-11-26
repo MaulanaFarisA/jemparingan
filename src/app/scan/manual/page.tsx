@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import SelectDropdown from "@/components/lib/ui/dropdown";
-import { Button } from "@/components/lib/ui/button";
 import SkorTombol from "@/components/lib/ui/skor_tombol";
+import KunciPilihan from "@/components/lib/ui/kunci-pilihan";
+import FloatingNav from "@/components/lib/ui/FloatingNav";
 
 interface Peserta {
   id: string;
@@ -130,7 +131,6 @@ export default function ManualSkoringPage() {
   return (
     <div className="p-6 max-w-md mx-auto flex flex-col gap-6">
       {/* <h1 className="text-xl font-semibold text-center">Input Manual</h1> */}
-
       <SelectDropdown
         label="Pilih Bandul"
         options={bandulList}
@@ -160,6 +160,9 @@ export default function ManualSkoringPage() {
           <SkorTombol />
         </div>
       </div>
+      <FloatingNav />
+      <KunciPilihan />
+
     </div>
   );
 }
