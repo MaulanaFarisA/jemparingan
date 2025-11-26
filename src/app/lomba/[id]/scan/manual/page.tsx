@@ -5,8 +5,6 @@ import { useParams } from "next/navigation";
 import supabase from '@/components/lib/db';
 import { addScore } from "@/components/lib/actions";
 import SelectDropdown from "@/components/lib/ui/dropdown";
-import SatuTombol from "@/components/lib/ui/1_tombol";
-import TigaTombol from "@/components/lib/ui/3_tombol";
 
 interface PesertaRaw {
   registrasi_id: number;
@@ -203,11 +201,7 @@ export default function ManualSkoringPage() {
 
       <div className="flex flex-col items-center mt-6">
         <p className="text-2xl font-semibold mb-4">Pilih Skor : </p>
-        
-        <div className="flex flex-row gap-8 justify-center w-full">
-          <SatuTombol onClick={() => handleInputSkor(1)} disabled={loading} />
-          <TigaTombol onClick={() => handleInputSkor(3)} disabled={loading} />
-        </div>
+
         
         <button 
            onClick={() => handleInputSkor(0)}
