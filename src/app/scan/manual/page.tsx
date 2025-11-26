@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import SelectDropdown from "@/components/lib/ui/dropdown";
 import { Button } from "@/components/lib/ui/button";
-import SatuTombol from "@/components/lib/ui/1_tombol";
-import TigaTombol from "@/components/lib/ui/3_tombol";
+import SkorTombol from "@/components/lib/ui/skor_tombol";
 
 interface Peserta {
   id: string;
@@ -158,8 +157,7 @@ export default function ManualSkoringPage() {
       <div className="flex flex-col items-center">
         <p className="text-2xl font-semibold">Pilih Skor : </p>
         <div className="flex flex-row gap-14 mt-3">
-          <SatuTombol />
-          <TigaTombol />
+          <SkorTombol />
         </div>
       </div>
     </div>
