@@ -5,10 +5,11 @@ import SelectDropdown from "@/components/lib/ui/dropdown";
 import { Button } from "@/components/lib/ui/button";
 import SatuTombol from "@/components/lib/ui/1_tombol";
 import TigaTombol from "@/components/lib/ui/3_tombol";
+import SkorTombol from "@/components/lib/ui/skor_tombol";
+import KunciPilihan from "@/components/lib/ui/kunci-pilihan";
 import Container from "@/components/lib/ui/container";
 import ScoringHeader from "@/components/lib/ui/ScoringHeader";
 import FloatingNav from "@/components/lib/ui/FloatingNav";
-
 
 interface Peserta {
   id: string;
@@ -167,16 +168,20 @@ export default function ManualSkoringPage() {
           disabled={!selectedPeserta}
         />
 
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center gap-4">
           <p className="text-2xl font-semibold">Pilih Skor : </p>
           <div className="flex flex-row gap-14 mt-3">
             <SatuTombol />
             <TigaTombol />
           </div>
+          <div className="flex flex-row gap-14 mt-3">
+            <SkorTombol />
+          </div>
         </div>
       </div>
 
       <FloatingNav />
+      <KunciPilihan />
     </Container>
   );
 }
