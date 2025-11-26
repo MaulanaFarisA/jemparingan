@@ -10,11 +10,10 @@ import TigaTombol from "@/components/lib/ui/3_tombol";
 
 interface PesertaRaw {
   registrasi_id: number;
-  profiles: {  
+  bandul_id: number | null;
+  profiles: {
     name: string;
-    panah: {
-      panah_id: number;
-    }[];
+    panah: { panah_id: number }[];
   };
 }
 
@@ -46,12 +45,14 @@ export default function ManualSkoringPage() {
         .from("registrasi_lomba")
         .select(`
           registrasi_id,
+          bandul_id,
           profiles:profile_id (
             name,
             panah ( panah_id )
           )
         `)
-        .eq("lomba_id", lombaId);
+        .eq("lomba_id", lombaId)
+        .eq("payment_status", "Sudah bayar");
 
       if (error) {
         console.error("Error fetch peserta:", error);
@@ -72,31 +73,26 @@ export default function ManualSkoringPage() {
     fetchData();
   }, [lombaId]);
 
-  useEffect(() => {
-    if (!selectedPesertaName) {
-      setPanahList([]);
-      setSelectedPanahId(null);
+useEffect(() => {
+    if (!selectedBandul) {
+      setPesertaList([]);
+      setSelectedPesertaName(null);
       return;
     }
 
-    const userFound = rawData.find(
-      (r) => r.profiles?.name === selectedPesertaName
-    );
+    const filteredPeserta = rawData
+      .filter((r) => r.bandul_id === selectedBandul)
+      .map((r) => r.profiles?.name)
+      .filter(Boolean);
 
-    if (userFound && userFound.profiles?.panah?.length > 0) {
-      const listPanahId = userFound.profiles.panah.map((p) => p.panah_id);
-      setPanahList(listPanahId);
-      
-      if (listPanahId.length === 1) {
-        setSelectedPanahId(listPanahId[0]);
-      } else {
-        setSelectedPanahId(null);
-      }
-    } else {
-      setPanahList([]);
-      setSelectedPanahId(null);
-    }
-  }, [selectedPesertaName, rawData]);
+    const uniqueNama = [...new Set(filteredPeserta)];
+    setPesertaList(uniqueNama as string[]);
+    
+    setSelectedPesertaName(null);
+    setPanahList([]);
+    setSelectedPanahId(null);
+
+  }, [selectedBandul, rawData]);
 
   const handleInputSkor = async (skor: number) => {
     if (!selectedBandul || !selectedPesertaName || !selectedPanahId) {
