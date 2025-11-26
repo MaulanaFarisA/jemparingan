@@ -5,8 +5,9 @@ import { useParams } from "next/navigation";
 import supabase from '@/components/lib/db';
 import { addScore } from "@/components/lib/actions";
 import SelectDropdown from "@/components/lib/ui/dropdown";
-
 import SkorTombol from "@/components/lib/ui/skor_tombol"; 
+import PopupModal from "@/components/lib/ui/PopupModal";
+
 
 interface SimpanTombolProps {
   disabled?: boolean;
@@ -47,11 +48,16 @@ interface BandulRaw {
   nomor_bandul: number;
 }
 
+
 export default function ManualSkoringPage() {
   const params = useParams();
   const lombaId = Number(params.id);
 
   const [loading, setLoading] = useState(false);
+  
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupType, setPopupType] = useState<"success" | "update" | "error">("success");
+  const [popupMessage, setPopupMessage] = useState("");
 
   const [rawPeserta, setRawPeserta] = useState<PesertaRaw[]>([]);
   const [rawBandul, setRawBandul] = useState<BandulRaw[]>([]);
@@ -67,7 +73,6 @@ export default function ManualSkoringPage() {
   const [selectedSkor, setSelectedSkor] = useState<number | null>(null);
   const [isLocked, setIsLocked] = useState(false);
 
-  // --- FETCH DATA ---
   useEffect(() => {
     async function fetchAllData() {
       if (!lombaId) return;
@@ -111,23 +116,18 @@ export default function ManualSkoringPage() {
       setSelectedPesertaName(null);
       return;
     }
-
     const bandulAsli = rawBandul.find(b => b.nomor_bandul === selectedNomorBandul);
     if (!bandulAsli) return;
-
     const filteredPeserta = rawPeserta
       .filter((r) => r.bandul_id === bandulAsli.bandul_id)
       .map((r) => r.profiles?.name)
       .filter(Boolean);
-
     setPesertaOptions([...new Set(filteredPeserta)] as string[]);
-    
     setSelectedPesertaName(null);
     setPanahOptions([]);
     setSelectedNamaPanah(null);
     setSelectedSkor(null);
     setIsLocked(false);
-
   }, [selectedNomorBandul, rawPeserta, rawBandul]);
 
   useEffect(() => {
@@ -136,52 +136,51 @@ export default function ManualSkoringPage() {
       setSelectedNamaPanah(null);
       return;
     }
-
-    const userFound = rawPeserta.find(
-      (r) => r.profiles?.name === selectedPesertaName
-    );
-
+    const userFound = rawPeserta.find((r) => r.profiles?.name === selectedPesertaName);
     if (userFound && userFound.profiles?.panah?.length > 0) {
       const listNamaPanah = userFound.profiles.panah.map((p) => 
         p.nama_panah ? p.nama_panah : `Panah ID: ${p.panah_id}`
       );
-      
       setPanahOptions(listNamaPanah);
-      
-      if (listNamaPanah.length === 1) {
-        setSelectedNamaPanah(listNamaPanah[0]);
-      } else {
-        setSelectedNamaPanah(null);
-      }
+      if (listNamaPanah.length === 1) setSelectedNamaPanah(listNamaPanah[0]);
+      else setSelectedNamaPanah(null);
     } else {
       setPanahOptions([]);
       setSelectedNamaPanah(null);
     }
-    
     setSelectedSkor(null);
     setIsLocked(false);
   }, [selectedPesertaName, rawPeserta]);
 
   const handleSelectSkor = (skor: number) => {
-    if (selectedSkor === skor) {
-      setSelectedSkor(null);
-    } else {
-      setSelectedSkor(skor);
-    }
+    if (selectedSkor === skor) setSelectedSkor(null);
+    else setSelectedSkor(skor);
     setIsLocked(false);
+  };
+
+  const triggerPopup = (type: "success" | "update" | "error", msg: string) => {
+    setPopupType(type);
+    setPopupMessage(msg);
+    setShowPopup(true);
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+    if (popupType !== "error") {
+    }
   };
 
   const handleSubmit = async () => {
     if (!selectedNomorBandul || !selectedPesertaName || !selectedNamaPanah) {
-      alert("⚠️ Lengkapi data Peserta, Bandul, dan Panah dulu!");
+      triggerPopup("error", "Data belum lengkap! Pilih Peserta, Bandul, dan Panah.");
       return;
     }
     if (selectedSkor === null) {
-      alert("⚠️ Pilih Skor (1, 3, atau 0) terlebih dahulu!");
+      triggerPopup("error", "Pilih Skor (1, 3, atau 0) terlebih dahulu!");
       return;
     }
     if (!isLocked) {
-      alert("⚠️ Centang 'Kunci Pilihan' sebelum menyimpan.");
+      triggerPopup("error", "Centang 'Kunci Pilihan' dulu.");
       return;
     }
 
@@ -189,14 +188,14 @@ export default function ManualSkoringPage() {
 
     try {
       const userFound = rawPeserta.find(r => r.profiles?.name === selectedPesertaName);
-      if (!userFound) throw new Error("Peserta tidak ditemukan data aslinya");
+      if (!userFound) throw new Error("Data peserta tidak valid.");
 
       const panahAsli = userFound.profiles.panah.find(p => {
         const displayName = p.nama_panah ? p.nama_panah : `Panah ID: ${p.panah_id}`;
         return displayName === selectedNamaPanah;
       });
 
-      if (!panahAsli) throw new Error("ID Panah tidak ditemukan");
+      if (!panahAsli) throw new Error("Data panah tidak valid.");
 
       const bandulAsli = rawBandul.find(b => b.nomor_bandul === selectedNomorBandul);
       
@@ -208,75 +207,83 @@ export default function ManualSkoringPage() {
       });
 
       if (result.success) {
-        alert(`✅ SUKSES! Skor ${selectedSkor} tersimpan.`);
-
+        if (result.type === 'UPDATE') {
+           triggerPopup("update", `⚠️ Skor berhasil diperbarui menjadi ${selectedSkor}.`);
+        } else {
+           triggerPopup("success", "✅ Skor berhasil disimpan!");
+        }
       } else {
-        alert(`❌ Gagal: ${result.message}`);
+        triggerPopup("error", result.message || "Gagal menyimpan.");
       }
     } catch (err: any) {
       console.error(err);
-      alert("Error: " + err.message);
+      triggerPopup("error", "Terjadi kesalahan sistem. Cek koneksi internet.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <>
+      <PopupModal 
+        isOpen={showPopup}
+        type={popupType}
+        message={popupMessage}
+        onClose={handleClosePopup}
+      />
+
+      <div className="flex flex-col min-h-screen">
         <div className="p-6 max-w-md mx-auto flex flex-col gap-6 w-full flex-grow">
-        <h1 className="text-xl font-bold text-center mb-4">
-            Input Skor Manual
-        </h1>
+          <h1 className="text-xl font-bold text-center mb-4">Input Skor Manual</h1>
 
-        <SelectDropdown
-            label="Pilih Nomor Bandul"
-            options={bandulOptions}
-            value={selectedNomorBandul}
-            onSelect={(v) => setSelectedNomorBandul(v as number)}
-        />
+          <SelectDropdown
+              label="Pilih Nomor Bandul"
+              options={bandulOptions}
+              value={selectedNomorBandul}
+              onSelect={(v) => setSelectedNomorBandul(v as number)}
+          />
 
-        <SelectDropdown
-            label="Nama Peserta"
-            options={pesertaOptions}
-            value={selectedPesertaName}
-            onSelect={(v) => setSelectedPesertaName(v as string)}
-            disabled={!selectedNomorBandul}
-        />
+          <SelectDropdown
+              label="Nama Peserta"
+              options={pesertaOptions}
+              value={selectedPesertaName}
+              onSelect={(v) => setSelectedPesertaName(v as string)}
+              disabled={!selectedNomorBandul}
+          />
 
-        <SelectDropdown
-            label="Pilih Anak Panah"
-            options={panahOptions}
-            value={selectedNamaPanah}
-            onSelect={(v) => setSelectedNamaPanah(v as string)}
-            disabled={!selectedPesertaName}
-        />
+          <SelectDropdown
+              label="Pilih Anak Panah"
+              options={panahOptions}
+              value={selectedNamaPanah}
+              onSelect={(v) => setSelectedNamaPanah(v as string)}
+              disabled={!selectedPesertaName}
+          />
 
-        <div className="flex flex-col items-center mt-4">
-            <p className="text-2xl font-semibold mb-4">
-              Pilih Skor: <span className="text-blue-600">{selectedSkor !== null ? selectedSkor : "-"}</span>
-            </p>
-            
-            <div className="flex flex-row justify-center w-full">
-              {/* KOMPONEN BARU */}
-              <SkorTombol 
-                selectedSkor={selectedSkor} 
-                onSelect={handleSelectSkor}
-                disabled={loading}
-              />
-            </div>
-            
-            <button 
-                onClick={() => handleSelectSkor(0)}
-                disabled={loading}
-                className={`mt-6 px-6 py-2 rounded-full font-medium transition-all ${
-                    selectedSkor === 0 
-                    ? "bg-gray-800 text-white" 
-                    : "bg-gray-200 text-gray-500 hover:bg-gray-300"
-                }`}
-            >
-            Input Miss (Skor 0)
-            </button>
-        </div>
+          <div className="flex flex-col items-center mt-4">
+              <p className="text-2xl font-semibold mb-4">
+                Pilih Skor: <span className="text-blue-600">{selectedSkor !== null ? selectedSkor : "-"}</span>
+              </p>
+              
+              <div className="flex flex-row justify-center w-full">
+                <SkorTombol 
+                  selectedSkor={selectedSkor} 
+                  onSelect={handleSelectSkor}
+                  disabled={loading}
+                />
+              </div>
+              
+              <button 
+                  onClick={() => handleSelectSkor(0)}
+                  disabled={loading}
+                  className={`mt-6 px-6 py-2 rounded-full font-medium transition-all ${
+                      selectedSkor === 0 
+                      ? "bg-gray-800 text-white" 
+                      : "bg-gray-200 text-gray-500 hover:bg-gray-300"
+                  }`}
+              >
+              Input Miss (Skor 0)
+              </button>
+          </div>
         </div>
 
         <div 
@@ -304,6 +311,7 @@ export default function ManualSkoringPage() {
                 />
             </div>
         </div>
-    </div>
+      </div>
+    </>
   );
 }
