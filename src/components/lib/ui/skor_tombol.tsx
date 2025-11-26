@@ -1,14 +1,18 @@
 "use client";
 import { useState } from "react";
 
-export default function SkorTombol() {
-  const [active, setActive] = useState<number | null>(null);
-
+export default function SkorTombol({
+  value,
+  onChange,
+}: {
+  value: number | null;
+  onChange: (val: number | null) => void;
+}) {
   const toggleBox = (boxNumber: number) => {
-    if (active === boxNumber) {
-      setActive(null);
+    if (value === boxNumber) {
+      onChange(null);
     } else {
-      setActive(boxNumber);
+      onChange(boxNumber);
     }
   };
 
@@ -16,12 +20,12 @@ export default function SkorTombol() {
     <div className="flex gap-[56px]">
       {/* Box 1 (value 3) */}
       <div
-        onClick={() => toggleBox(1)}
+        onClick={() => toggleBox(3)}
         className="bg-[#AE2424] rounded-[17px] flex items-center justify-center cursor-pointer"
         style={{
           width: 130,
           height: 130,
-          border: active === 1 ? "10px solid #FFEE00" : "5px solid #921D1D",
+          border: value === 3 ? "10px solid #FFEE00" : "5px solid #921D1D",
         }}
       >
         <span
@@ -38,12 +42,12 @@ export default function SkorTombol() {
 
       {/* Box 2 (value 1) */}
       <div
-        onClick={() => toggleBox(2)}
+        onClick={() => toggleBox(1)}
         className="bg-white rounded-[17px] flex items-center justify-center cursor-pointer"
         style={{
           width: 130,
           height: 130,
-          border: active === 2 ? "10px solid #FFEE00" : "5px solid #E1E1E1",
+          border: value === 1 ? "10px solid #FFEE00" : "5px solid #E1E1E1",
         }}
       >
         <span

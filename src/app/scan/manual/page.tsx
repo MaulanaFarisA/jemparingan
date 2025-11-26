@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import SelectDropdown from "@/components/lib/ui/dropdown";
 import { Button } from "@/components/lib/ui/button";
-import SatuTombol from "@/components/lib/ui/1_tombol";
-import TigaTombol from "@/components/lib/ui/3_tombol";
 import SkorTombol from "@/components/lib/ui/skor_tombol";
 import KunciPilihan from "@/components/lib/ui/kunci-pilihan";
 import Container from "@/components/lib/ui/container";
@@ -30,6 +28,7 @@ export default function ManualSkoringPage() {
   const [selectedBandul, setSelectedBandul] = useState<number | null>(null);
   const [selectedPeserta, setSelectedPeserta] = useState<string | null>(null);
   const [selectedPanah, setSelectedPanah] = useState<string | null>(null);
+  const [selectedScore, setSelectedScore] = useState<number | null>(null);
 
   // -------------------------------------------------------------------
   // FETCH DATABASE
@@ -118,7 +117,7 @@ export default function ManualSkoringPage() {
   // SUBMIT HANDLER
   // -------------------------------------------------------------------
   const handleSubmit = () => {
-    if (!selectedBandul || !selectedPeserta || !selectedPanah) {
+    if (!selectedBandul || !selectedPeserta || !selectedPanah || selectedScore === null) {
       alert("Lengkapi semua pilihan terlebih dahulu!");
       return;
     }
@@ -127,6 +126,7 @@ export default function ManualSkoringPage() {
       bandul: selectedBandul,
       peserta: selectedPeserta,
       panah: selectedPanah,
+      skor: selectedScore,
     });
   };
 
@@ -171,11 +171,7 @@ export default function ManualSkoringPage() {
         <div className="flex flex-col items-center gap-4">
           <p className="text-2xl font-semibold">Pilih Skor : </p>
           <div className="flex flex-row gap-14 mt-3">
-            <SatuTombol />
-            <TigaTombol />
-          </div>
-          <div className="flex flex-row gap-14 mt-3">
-            <SkorTombol />
+            <SkorTombol value={selectedScore} onChange={setSelectedScore} />
           </div>
         </div>
       </div>
