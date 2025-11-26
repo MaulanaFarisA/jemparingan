@@ -8,38 +8,49 @@ import SelectDropdown from "@/components/lib/ui/dropdown";
 import SatuTombol from "@/components/lib/ui/1_tombol";
 import TigaTombol from "@/components/lib/ui/3_tombol";
 
+interface SimpanTombolProps {
+  disabled?: boolean;
+  onClick?: () => void;
+  loading?: boolean;
+}
+
+function SimpanTombol({ disabled = false, onClick, loading = false }: SimpanTombolProps) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`w-full h-14 rounded-[17px] flex items-center justify-center font-Poppins font-bold text-[24px] leading-[100%] tracking-[7%] text-white transition-all duration-200 ${
+        disabled
+          ? "bg-[#58A700]/50 cursor-not-allowed"
+          : "bg-[#58A700] hover:bg-[#4E9700] cursor-pointer"
+      }`}
+    >
+      {loading ? "MENYIMPAN..." : "SIMPAN"}
+    </button>
+  );
+}
+
 interface PesertaRaw {
   registrasi_id: number;
-<<<<<<< HEAD
   bandul_id: number | null;
   profiles: {
     name: string;
     panah: {
       panah_id: number;
       nama_panah: string | null;
-=======
-  profiles: {  
-    name: string;
-    panah: {
-      panah_id: number;
->>>>>>> e2888e0 (fetch api for scan manual)
     }[];
   };
 }
 
-<<<<<<< HEAD
 interface BandulRaw {
   bandul_id: number;
   nomor_bandul: number;
 }
 
-=======
->>>>>>> e2888e0 (fetch api for scan manual)
 export default function ManualSkoringPage() {
   const params = useParams();
   const lombaId = Number(params.id);
 
-<<<<<<< HEAD
   const [loading, setLoading] = useState(false);
 
   const [rawPeserta, setRawPeserta] = useState<PesertaRaw[]>([]);
@@ -52,6 +63,9 @@ export default function ManualSkoringPage() {
   const [selectedNomorBandul, setSelectedNomorBandul] = useState<number | null>(null);
   const [selectedPesertaName, setSelectedPesertaName] = useState<string | null>(null);
   const [selectedNamaPanah, setSelectedNamaPanah] = useState<string | null>(null);
+
+  const [selectedSkor, setSelectedSkor] = useState<number | null>(null);
+  const [isLocked, setIsLocked] = useState(false);
 
   useEffect(() => {
     async function fetchAllData() {
@@ -110,6 +124,8 @@ export default function ManualSkoringPage() {
     setSelectedPesertaName(null);
     setPanahOptions([]);
     setSelectedNamaPanah(null);
+    setSelectedSkor(null);
+    setIsLocked(false);
 
   }, [selectedNomorBandul, rawPeserta, rawBandul]);
 
@@ -121,71 +137,10 @@ export default function ManualSkoringPage() {
     }
 
     const userFound = rawPeserta.find(
-=======
-  const [rawData, setRawData] = useState<PesertaRaw[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  const [bandulList] = useState<number[]>(Array.from({ length: 20 }, (_, i) => i + 1));
-  const [pesertaList, setPesertaList] = useState<string[]>([]);
-  const [panahList, setPanahList] = useState<number[]>([]);
-
-  const [selectedBandul, setSelectedBandul] = useState<number | null>(null);
-  const [selectedPesertaName, setSelectedPesertaName] = useState<string | null>(null);
-  const [selectedPanahId, setSelectedPanahId] = useState<number | null>(null);
-
-  useEffect(() => {
-    async function fetchData() {
-        console.log("CEK ID LOMBA:", lombaId);
-
-        if (!lombaId) {
-            console.error("ID LOMBA TIDAK VALID/KOSONG");
-            return;
-        }
-        
-      const { data, error } = await supabase
-        .from("registrasi_lomba")
-        .select(`
-          registrasi_id,
-          profiles:profile_id (
-            name,
-            panah ( panah_id )
-          )
-        `)
-        .eq("lomba_id", lombaId);
-
-      if (error) {
-        console.error("Error fetch peserta:", error);
-        return;
-      }
-
-      console.log("DATA BERHASIL DIAMBIL:", data);
-
-      // @ts-ignore
-      setRawData(data || []);
-
-      // @ts-ignore
-      const namaPeserta = data?.map((d) => d.profiles?.name).filter(Boolean) || [];
-      const uniqueNama = [...new Set(namaPeserta)];
-      setPesertaList(uniqueNama as string[]);
-    }
-
-    fetchData();
-  }, [lombaId]);
-
-  useEffect(() => {
-    if (!selectedPesertaName) {
-      setPanahList([]);
-      setSelectedPanahId(null);
-      return;
-    }
-
-    const userFound = rawData.find(
->>>>>>> e2888e0 (fetch api for scan manual)
       (r) => r.profiles?.name === selectedPesertaName
     );
 
     if (userFound && userFound.profiles?.panah?.length > 0) {
-<<<<<<< HEAD
       const listNamaPanah = userFound.profiles.panah.map((p) => 
         p.nama_panah ? p.nama_panah : `Panah ID: ${p.panah_id}`
       );
@@ -201,41 +156,29 @@ export default function ManualSkoringPage() {
       setPanahOptions([]);
       setSelectedNamaPanah(null);
     }
+    
+    setSelectedSkor(null);
+    setIsLocked(false);
   }, [selectedPesertaName, rawPeserta]);
 
-  const handleInputSkor = async (skor: number) => {
-    if (!selectedNomorBandul || !selectedPesertaName || !selectedNamaPanah) {
-      alert("⚠️ Lengkapi data dulu!");
-=======
-      const listPanahId = userFound.profiles.panah.map((p) => p.panah_id);
-      setPanahList(listPanahId);
-      
-      if (listPanahId.length === 1) {
-        setSelectedPanahId(listPanahId[0]);
-      } else {
-        setSelectedPanahId(null);
-      }
-    } else {
-      setPanahList([]);
-      setSelectedPanahId(null);
-    }
-  }, [selectedPesertaName, rawData]);
 
-  const handleInputSkor = async (skor: number) => {
-    if (!selectedBandul || !selectedPesertaName || !selectedPanahId) {
-      alert("⚠️ Mohon pilih Bandul, Peserta, dan Nomor Panah dulu!");
+  const handleSubmit = async () => {
+    if (!selectedNomorBandul || !selectedPesertaName || !selectedNamaPanah) {
+      alert("⚠️ Lengkapi data Peserta, Bandul, dan Panah dulu!");
       return;
     }
-    if (!lombaId) {
-      alert("⚠️ URL tidak valid");
->>>>>>> e2888e0 (fetch api for scan manual)
+    if (selectedSkor === null) {
+      alert("⚠️ Pilih Skor (1, 3, atau 0) terlebih dahulu!");
+      return;
+    }
+    if (!isLocked) {
+      alert("⚠️ Centang 'Kunci Pilihan' sebelum menyimpan.");
       return;
     }
 
     setLoading(true);
 
     try {
-<<<<<<< HEAD
       const userFound = rawPeserta.find(r => r.profiles?.name === selectedPesertaName);
       if (!userFound) throw new Error("Peserta tidak ditemukan data aslinya");
 
@@ -251,105 +194,104 @@ export default function ManualSkoringPage() {
       const result = await addScore({
         lombaId: lombaId,
         panahIdentifier: panahAsli.panah_id,
-        skor: skor,
-        bandulId: skor === 3 ? bandulAsli?.bandul_id : undefined
-=======
-      const result = await addScore({
-        lombaId: lombaId,
-        panahIdentifier: selectedPanahId,
-        skor: skor,
-        bandulId: skor === 3 ? selectedBandul : undefined
->>>>>>> e2888e0 (fetch api for scan manual)
+        skor: selectedSkor,
+        bandulId: selectedSkor === 3 ? bandulAsli?.bandul_id : undefined
       });
 
       if (result.success) {
-        alert(`✅ Skor ${skor} Masuk!`);
+        alert(`✅ SUKSES! Skor ${selectedSkor} tersimpan.`);
+        
       } else {
         alert(`❌ Gagal: ${result.message}`);
       }
-<<<<<<< HEAD
     } catch (err: any) {
       console.error(err);
       alert("Error: " + err.message);
-=======
-    } catch (err) {
-      console.error(err);
-      alert("Terjadi kesalahan sistem");
->>>>>>> e2888e0 (fetch api for scan manual)
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="p-6 max-w-md mx-auto flex flex-col gap-6">
-      <h1 className="text-xl font-bold text-center mb-4">
-<<<<<<< HEAD
-        Input Skor Manual
-      </h1>
+    <div className="flex flex-col min-h-screen">
+        <div className="p-6 max-w-md mx-auto flex flex-col gap-6 w-full flex-grow">
+        <h1 className="text-xl font-bold text-center mb-4">
+            Input Skor Manual
+        </h1>
 
-      <SelectDropdown
-        label="Pilih Nomor Bandul"
-        options={bandulOptions}
-        value={selectedNomorBandul}
-        onSelect={(v) => setSelectedNomorBandul(v as number)}
-=======
-        Input Skor Manual (Lomba #{lombaId})
-      </h1>
+        <SelectDropdown
+            label="Pilih Nomor Bandul"
+            options={bandulOptions}
+            value={selectedNomorBandul}
+            onSelect={(v) => setSelectedNomorBandul(v as number)}
+        />
 
-      <SelectDropdown
-        label="Pilih Bandul Sasaran"
-        options={bandulList}
-        value={selectedBandul}
-        onSelect={(v) => setSelectedBandul(v as number)}
->>>>>>> e2888e0 (fetch api for scan manual)
-      />
+        <SelectDropdown
+            label="Nama Peserta"
+            options={pesertaOptions}
+            value={selectedPesertaName}
+            onSelect={(v) => setSelectedPesertaName(v as string)}
+            disabled={!selectedNomorBandul}
+        />
 
-      <SelectDropdown
-        label="Nama Peserta"
-<<<<<<< HEAD
-        options={pesertaOptions}
-        value={selectedPesertaName}
-        onSelect={(v) => setSelectedPesertaName(v as string)}
-        disabled={!selectedNomorBandul}
-      />
+        <SelectDropdown
+            label="Pilih Anak Panah"
+            options={panahOptions}
+            value={selectedNamaPanah}
+            onSelect={(v) => setSelectedNamaPanah(v as string)}
+            disabled={!selectedPesertaName}
+        />
 
-      <SelectDropdown
-        label="Pilih Anak Panah"
-        options={panahOptions}
-        value={selectedNamaPanah}
-        onSelect={(v) => setSelectedNamaPanah(v as string)}
-=======
-        options={pesertaList}
-        value={selectedPesertaName}
-        onSelect={(v) => setSelectedPesertaName(v as string)}
-      />
+        <div className="flex flex-col items-center mt-4">
+            <p className="text-2xl font-semibold mb-4">
+              Pilih Skor: <span className="text-blue-600">{selectedSkor !== null ? selectedSkor : "-"}</span>
+            </p>
+            
+            <div className="flex flex-row gap-8 justify-center w-full">
 
-      <SelectDropdown
-        label="ID Panah"
-        options={panahList}
-        value={selectedPanahId}
-        onSelect={(v) => setSelectedPanahId(v as number)}
->>>>>>> e2888e0 (fetch api for scan manual)
-        disabled={!selectedPesertaName}
-      />
-
-      <div className="flex flex-col items-center mt-6">
-        <p className="text-2xl font-semibold mb-4">Pilih Skor : </p>
-        
-        <div className="flex flex-row gap-8 justify-center w-full">
-          <SatuTombol onClick={() => handleInputSkor(1)} disabled={loading} />
-          <TigaTombol onClick={() => handleInputSkor(3)} disabled={loading} />
+            <SatuTombol onClick={() => setSelectedSkor(1)} disabled={loading} />
+            <TigaTombol onClick={() => setSelectedSkor(3)} disabled={loading} />
+            </div>
+            
+            <button 
+                onClick={() => setSelectedSkor(0)}
+                disabled={loading}
+                className={`mt-6 px-6 py-2 rounded-full font-medium transition-all ${
+                    selectedSkor === 0 
+                    ? "bg-gray-800 text-white" 
+                    : "bg-gray-200 text-gray-500 hover:bg-gray-300"
+                }`}
+            >
+            Input Miss (Skor 0)
+            </button>
         </div>
-        
-        <button 
-           onClick={() => handleInputSkor(0)}
-           disabled={loading}
-           className="mt-6 text-gray-500 underline font-medium"
+        </div>
+
+        <div 
+            className="flex flex-col items-start p-6 bg-[#E4E4E4] border-t-[5px] border-[#AE6924] w-full max-w-md mx-auto"
+            style={{ minHeight: 279 }} 
         >
-          {loading ? "Menyimpan..." : "Input Miss (Skor 0)"}
-        </button>
-      </div>
+            <label className="flex items-center gap-3 cursor-pointer select-none">
+                <input
+                    type="checkbox"
+                    className="w-6 h-6 accent-[#3b3b3b] rounded cursor-pointer"
+                    checked={isLocked}
+                    onChange={(e) => setIsLocked(e.target.checked)}
+                    disabled={selectedSkor === null} 
+                />
+                <span className={`text-lg font-semibold ${selectedSkor === null ? "text-gray-400" : "text-[#505050]"}`}>
+                    Kunci Pilihan
+                </span>
+            </label>
+
+            <div className="mt-11 w-full">
+                <SimpanTombol
+                    disabled={!isLocked || loading}
+                    loading={loading}
+                    onClick={handleSubmit} 
+                />
+            </div>
+        </div>
     </div>
   );
 }
