@@ -6,6 +6,7 @@ import { Button } from "@/components/lib/ui/Button";
 import SatuTombol from "@/components/lib/ui/1_tombol";
 import TigaTombol from "@/components/lib/ui/3_tombol";
 
+
 interface Peserta {
   id: string;
   nama: string;
