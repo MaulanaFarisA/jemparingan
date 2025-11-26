@@ -13,105 +13,150 @@ interface PesertaRaw {
   bandul_id: number | null;
   profiles: {
     name: string;
-    panah: { panah_id: number }[];
+    panah: {
+      panah_id: number;
+      nama_panah: string | null;
+    }[];
   };
+}
+
+interface BandulRaw {
+  bandul_id: number;
+  nomor_bandul: number;
 }
 
 export default function ManualSkoringPage() {
   const params = useParams();
   const lombaId = Number(params.id);
 
-  const [rawData, setRawData] = useState<PesertaRaw[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const [bandulList] = useState<number[]>(Array.from({ length: 20 }, (_, i) => i + 1));
-  const [pesertaList, setPesertaList] = useState<string[]>([]);
-  const [panahList, setPanahList] = useState<number[]>([]);
+  const [rawPeserta, setRawPeserta] = useState<PesertaRaw[]>([]);
+  const [rawBandul, setRawBandul] = useState<BandulRaw[]>([]);
 
-  const [selectedBandul, setSelectedBandul] = useState<number | null>(null);
+  const [bandulOptions, setBandulOptions] = useState<number[]>([]);
+  const [pesertaOptions, setPesertaOptions] = useState<string[]>([]);
+  const [panahOptions, setPanahOptions] = useState<string[]>([]);
+
+  const [selectedNomorBandul, setSelectedNomorBandul] = useState<number | null>(null);
   const [selectedPesertaName, setSelectedPesertaName] = useState<string | null>(null);
-  const [selectedPanahId, setSelectedPanahId] = useState<number | null>(null);
+  const [selectedNamaPanah, setSelectedNamaPanah] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchData() {
-        console.log("CEK ID LOMBA:", lombaId);
+    async function fetchAllData() {
+      if (!lombaId) return;
 
-        if (!lombaId) {
-            console.error("ID LOMBA TIDAK VALID/KOSONG");
-            return;
-        }
-        
-      const { data, error } = await supabase
+      const { data: dataBandul } = await supabase
+        .from("bandul")
+        .select("bandul_id, nomor_bandul")
+        .eq("lomba_id", lombaId)
+        .order("nomor_bandul", { ascending: true });
+
+      if (dataBandul) {
+        setRawBandul(dataBandul);
+        setBandulOptions(dataBandul.map((b) => b.nomor_bandul));
+      }
+
+      const { data: dataPeserta, error } = await supabase
         .from("registrasi_lomba")
         .select(`
           registrasi_id,
           bandul_id,
           profiles:profile_id (
             name,
-            panah ( panah_id )
+            panah ( panah_id, nama_panah ) 
           )
         `)
         .eq("lomba_id", lombaId)
         .eq("payment_status", "Sudah bayar");
 
-      if (error) {
-        console.error("Error fetch peserta:", error);
-        return;
-      }
-
-      console.log("DATA BERHASIL DIAMBIL:", data);
-
+      if (error) console.error("Error fetch:", error);
+      
       // @ts-ignore
-      setRawData(data || []);
-
-      // @ts-ignore
-      const namaPeserta = data?.map((d) => d.profiles?.name).filter(Boolean) || [];
-      const uniqueNama = [...new Set(namaPeserta)];
-      setPesertaList(uniqueNama as string[]);
+      setRawPeserta(dataPeserta || []);
     }
 
-    fetchData();
+    fetchAllData();
   }, [lombaId]);
 
-useEffect(() => {
-    if (!selectedBandul) {
-      setPesertaList([]);
+  useEffect(() => {
+    if (!selectedNomorBandul) {
+      setPesertaOptions([]);
       setSelectedPesertaName(null);
       return;
     }
 
-    const filteredPeserta = rawData
-      .filter((r) => r.bandul_id === selectedBandul)
+    const bandulAsli = rawBandul.find(b => b.nomor_bandul === selectedNomorBandul);
+    if (!bandulAsli) return;
+
+    const filteredPeserta = rawPeserta
+      .filter((r) => r.bandul_id === bandulAsli.bandul_id)
       .map((r) => r.profiles?.name)
       .filter(Boolean);
 
-    const uniqueNama = [...new Set(filteredPeserta)];
-    setPesertaList(uniqueNama as string[]);
+    setPesertaOptions([...new Set(filteredPeserta)] as string[]);
     
     setSelectedPesertaName(null);
-    setPanahList([]);
-    setSelectedPanahId(null);
+    setPanahOptions([]);
+    setSelectedNamaPanah(null);
 
-  }, [selectedBandul, rawData]);
+  }, [selectedNomorBandul, rawPeserta, rawBandul]);
 
-  const handleInputSkor = async (skor: number) => {
-    if (!selectedBandul || !selectedPesertaName || !selectedPanahId) {
-      alert("⚠️ Mohon pilih Bandul, Peserta, dan Nomor Panah dulu!");
+  useEffect(() => {
+    if (!selectedPesertaName) {
+      setPanahOptions([]);
+      setSelectedNamaPanah(null);
       return;
     }
-    if (!lombaId) {
-      alert("⚠️ URL tidak valid");
+
+    const userFound = rawPeserta.find(
+      (r) => r.profiles?.name === selectedPesertaName
+    );
+
+    if (userFound && userFound.profiles?.panah?.length > 0) {
+      const listNamaPanah = userFound.profiles.panah.map((p) => 
+        p.nama_panah ? p.nama_panah : `Panah ID: ${p.panah_id}`
+      );
+      
+      setPanahOptions(listNamaPanah);
+      
+      if (listNamaPanah.length === 1) {
+        setSelectedNamaPanah(listNamaPanah[0]);
+      } else {
+        setSelectedNamaPanah(null);
+      }
+    } else {
+      setPanahOptions([]);
+      setSelectedNamaPanah(null);
+    }
+  }, [selectedPesertaName, rawPeserta]);
+
+  const handleInputSkor = async (skor: number) => {
+    if (!selectedNomorBandul || !selectedPesertaName || !selectedNamaPanah) {
+      alert("⚠️ Lengkapi data dulu!");
       return;
     }
 
     setLoading(true);
 
     try {
+      const userFound = rawPeserta.find(r => r.profiles?.name === selectedPesertaName);
+      if (!userFound) throw new Error("Peserta tidak ditemukan data aslinya");
+
+      const panahAsli = userFound.profiles.panah.find(p => {
+        const displayName = p.nama_panah ? p.nama_panah : `Panah ID: ${p.panah_id}`;
+        return displayName === selectedNamaPanah;
+      });
+
+      if (!panahAsli) throw new Error("ID Panah tidak ditemukan");
+
+      const bandulAsli = rawBandul.find(b => b.nomor_bandul === selectedNomorBandul);
+      
       const result = await addScore({
         lombaId: lombaId,
-        panahIdentifier: selectedPanahId,
+        panahIdentifier: panahAsli.panah_id,
         skor: skor,
-        bandulId: skor === 3 ? selectedBandul : undefined
+        bandulId: skor === 3 ? bandulAsli?.bandul_id : undefined
       });
 
       if (result.success) {
@@ -119,9 +164,9 @@ useEffect(() => {
       } else {
         alert(`❌ Gagal: ${result.message}`);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Terjadi kesalahan sistem");
+      alert("Error: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -130,28 +175,29 @@ useEffect(() => {
   return (
     <div className="p-6 max-w-md mx-auto flex flex-col gap-6">
       <h1 className="text-xl font-bold text-center mb-4">
-        Input Skor Manual (Lomba #{lombaId})
+        Input Skor Manual
       </h1>
 
       <SelectDropdown
-        label="Pilih Bandul Sasaran"
-        options={bandulList}
-        value={selectedBandul}
-        onSelect={(v) => setSelectedBandul(v as number)}
+        label="Pilih Nomor Bandul"
+        options={bandulOptions}
+        value={selectedNomorBandul}
+        onSelect={(v) => setSelectedNomorBandul(v as number)}
       />
 
       <SelectDropdown
         label="Nama Peserta"
-        options={pesertaList}
+        options={pesertaOptions}
         value={selectedPesertaName}
         onSelect={(v) => setSelectedPesertaName(v as string)}
+        disabled={!selectedNomorBandul}
       />
 
       <SelectDropdown
-        label="ID Panah"
-        options={panahList}
-        value={selectedPanahId}
-        onSelect={(v) => setSelectedPanahId(v as number)}
+        label="Pilih Anak Panah"
+        options={panahOptions}
+        value={selectedNamaPanah}
+        onSelect={(v) => setSelectedNamaPanah(v as string)}
         disabled={!selectedPesertaName}
       />
 
