@@ -5,6 +5,9 @@ import SelectDropdown from "@/components/lib/ui/dropdown";
 import { Button } from "@/components/lib/ui/button";
 import SatuTombol from "@/components/lib/ui/1_tombol";
 import TigaTombol from "@/components/lib/ui/3_tombol";
+import Container from "@/components/lib/ui/container";
+import ScoringHeader from "@/components/lib/ui/ScoringHeader";
+import FloatingNav from "@/components/lib/ui/FloatingNav";
 
 
 interface Peserta {
@@ -130,39 +133,50 @@ export default function ManualSkoringPage() {
   // RENDER
   // -------------------------------------------------------------------
   return (
-    <div className="p-6 max-w-md mx-auto flex flex-col gap-6">
-      {/* <h1 className="text-xl font-semibold text-center">Input Manual</h1> */}
-
-      <SelectDropdown
-        label="Pilih Bandul"
-        options={bandulList}
-        value={selectedBandul}
-        onSelect={(v) => setSelectedBandul(v)}
+    <Container className="!p-0 !m-0">
+      <ScoringHeader
+        userName="Input Manual"
+        round={1}
+        titleClassName="!text-xl"
+        gap="15px"
       />
 
-      <SelectDropdown
-        label="Nama Peserta"
-        options={pesertaList}
-        value={selectedPeserta}
-        onSelect={(v) => setSelectedPeserta(v)}
-        disabled={!selectedBandul}
-      />
+      <div className="pt-[50px] px-[44px] w-full flex flex-col gap-[14px] flex-1 overflow-y-auto no-scrollbar">
+        {/* <h1 className="text-xl font-semibold text-center">Input Manual</h1> */}
 
-      <SelectDropdown
-        label="Nomor Panah"
-        options={panahList}
-        value={selectedPanah}
-        onSelect={(v) => setSelectedPanah(v)}
-        disabled={!selectedPeserta}
-      />
+        <SelectDropdown
+          label="Pilih Bandul"
+          options={bandulList}
+          value={selectedBandul}
+          onSelect={(v) => setSelectedBandul(v)}
+        />
 
-      <div className="flex flex-col items-center">
-        <p className="text-2xl font-semibold">Pilih Skor : </p>
-        <div className="flex flex-row gap-14 mt-3">
-          <SatuTombol />
-          <TigaTombol />
+        <SelectDropdown
+          label="Nama Peserta"
+          options={pesertaList}
+          value={selectedPeserta}
+          onSelect={(v) => setSelectedPeserta(v)}
+          disabled={!selectedBandul}
+        />
+
+        <SelectDropdown
+          label="Nomor Panah"
+          options={panahList}
+          value={selectedPanah}
+          onSelect={(v) => setSelectedPanah(v)}
+          disabled={!selectedPeserta}
+        />
+
+        <div className="flex flex-col items-center">
+          <p className="text-2xl font-semibold">Pilih Skor : </p>
+          <div className="flex flex-row gap-14 mt-3">
+            <SatuTombol />
+            <TigaTombol />
+          </div>
         </div>
       </div>
-    </div>
+
+      <FloatingNav />
+    </Container>
   );
 }

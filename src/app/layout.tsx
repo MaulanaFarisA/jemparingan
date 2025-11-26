@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={poppins.variable}>
-      <body className="relative flex items-center justify-center h-screen w-screen overflow-hidden">
+      <body className="relative flex items-center justify-center h-screen w-screen">
         <Image
           src="/background_jemparingan.webp"
           alt="Jemparingan background"

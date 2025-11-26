@@ -1,7 +1,5 @@
-// components/lib/PanitiaHeader.tsx
-
 import React from 'react';
-import Avatar from './Avatar'; 
+import Avatar from './Avatar';
 
 interface PanitiaHeaderProps {
   userName: string;
@@ -10,7 +8,7 @@ interface PanitiaHeaderProps {
 
 const PanitiaHeader: React.FC<PanitiaHeaderProps> = ({ userName, userImage }) => {
   return (
-    <header 
+    <header
       className="
         w-full 
         px-[35px]  
@@ -18,7 +16,6 @@ const PanitiaHeader: React.FC<PanitiaHeaderProps> = ({ userName, userImage }) =>
         flex 
         items-center 
         
-        /* UBAH INI: Pakai justify-start agar elemen nempel di kiri & gap bekerja */
         justify-start
         
         gap-[17px]        

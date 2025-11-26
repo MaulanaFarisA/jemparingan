@@ -9,8 +9,9 @@ const Container = ({
 }) => {
     return (
         <section
+            style={{ width: '414px', minWidth: '414px', maxWidth: 'none', flexShrink: 0 }}
             className={cn(
-                `flex h-screen aspect-9/16 max-w-[33vw] flex-col gap-4 px-10 py-10 sm:px-8 items-center`,
+                `flex h-screen w-[414px] min-w-[414px] shrink-0 relative flex-col gap-4 items-center`,
                 className,
             )}
         >
