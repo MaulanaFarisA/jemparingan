@@ -3,7 +3,6 @@
 
 /* === Tailwind directives (benar) === */
 @import "tailwindcss";
-@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -17,11 +16,7 @@
   --font-sans: var(--font-poppins);
   --font-mono: 'Roboto Mono', monospace;
 
-  /* Warna, dsb */
-  --background: #ffffff;
-  --foreground: #171717;
-
-  /* Jika butuh aspect ratio sebagai variable, simpan sebagai custom property */
+  /* Aspect ratio and design tokens */
   --aspect-ratio: 9/16;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -57,14 +52,7 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-/* Contoh penggunaan global */
-html, body {
-  font-family: var(--font-sans);
-  background-color: var(--background);
-  color: var(--foreground);
-}
-
-/* Optional: helper class yang menggunakan aspect ratio var */
+/* Helper class for aspect ratio */
 .ratio-9-16 {
   aspect-ratio: calc(var(--aspect-ratio));
 }
@@ -145,7 +133,9 @@ html, body {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
   }
 }

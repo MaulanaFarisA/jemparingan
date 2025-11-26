@@ -1,17 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -25,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={poppins.variable}>
       <body className="relative flex items-center justify-center h-screen w-screen overflow-hidden">
         <Image
           src="/background_jemparingan.webp"
@@ -34,7 +29,6 @@ export default function RootLayout({
           height={1000}
           className="object-cover absolute !aspect-9/16 !h-screen !w-auto"
         />
-          {/* <Footer /> */}
         <div className="absolute z-10 flex flex-col items-center justify-center h-full w-full">
           {children}
         </div>
@@ -42,4 +36,3 @@ export default function RootLayout({
     </html>
   );
 }
-
