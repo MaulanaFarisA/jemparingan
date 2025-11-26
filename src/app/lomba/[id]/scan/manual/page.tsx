@@ -5,8 +5,8 @@ import { useParams } from "next/navigation";
 import supabase from '@/components/lib/db';
 import { addScore } from "@/components/lib/actions";
 import SelectDropdown from "@/components/lib/ui/dropdown";
-import SatuTombol from "@/components/lib/ui/1_tombol";
-import TigaTombol from "@/components/lib/ui/3_tombol";
+
+import SkorTombol from "@/components/lib/ui/skor_tombol"; 
 
 interface SimpanTombolProps {
   disabled?: boolean;
@@ -67,6 +67,7 @@ export default function ManualSkoringPage() {
   const [selectedSkor, setSelectedSkor] = useState<number | null>(null);
   const [isLocked, setIsLocked] = useState(false);
 
+  // --- FETCH DATA ---
   useEffect(() => {
     async function fetchAllData() {
       if (!lombaId) return;
@@ -161,6 +162,14 @@ export default function ManualSkoringPage() {
     setIsLocked(false);
   }, [selectedPesertaName, rawPeserta]);
 
+  const handleSelectSkor = (skor: number) => {
+    if (selectedSkor === skor) {
+      setSelectedSkor(null);
+    } else {
+      setSelectedSkor(skor);
+    }
+    setIsLocked(false);
+  };
 
   const handleSubmit = async () => {
     if (!selectedNomorBandul || !selectedPesertaName || !selectedNamaPanah) {
@@ -200,7 +209,7 @@ export default function ManualSkoringPage() {
 
       if (result.success) {
         alert(`✅ SUKSES! Skor ${selectedSkor} tersimpan.`);
-        
+
       } else {
         alert(`❌ Gagal: ${result.message}`);
       }
@@ -247,14 +256,17 @@ export default function ManualSkoringPage() {
               Pilih Skor: <span className="text-blue-600">{selectedSkor !== null ? selectedSkor : "-"}</span>
             </p>
             
-            <div className="flex flex-row gap-8 justify-center w-full">
-
-            <SatuTombol onClick={() => setSelectedSkor(1)} disabled={loading} />
-            <TigaTombol onClick={() => setSelectedSkor(3)} disabled={loading} />
+            <div className="flex flex-row justify-center w-full">
+              {/* KOMPONEN BARU */}
+              <SkorTombol 
+                selectedSkor={selectedSkor} 
+                onSelect={handleSelectSkor}
+                disabled={loading}
+              />
             </div>
             
             <button 
-                onClick={() => setSelectedSkor(0)}
+                onClick={() => handleSelectSkor(0)}
                 disabled={loading}
                 className={`mt-6 px-6 py-2 rounded-full font-medium transition-all ${
                     selectedSkor === 0 
