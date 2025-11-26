@@ -1,4 +1,3 @@
-import React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../utils";
 
@@ -30,7 +29,7 @@ const buttonVariants = cva(
 
 interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-  VariantProps<typeof buttonVariants> {
+    VariantProps<typeof buttonVariants> {
   /** warna background */
   color?: string;
   /** warna hover */
