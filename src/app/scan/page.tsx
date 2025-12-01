@@ -17,13 +17,14 @@ interface PanahData {
 }
 
 export default function ScanPage() {
+  // State Management (Dari Backend Work)
   const [scannedData, setScannedData] = useState<PanahData | null>(null);
   const [showScanner, setShowScanner] = useState(true);
   const [skor, setSkor] = useState<number | null>(null);
   const [isLocked, setIsLocked] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // --- 1. HANDLE HASIL SCAN ---
+  // --- 1. HANDLE HASIL SCAN (Logic Backend) ---
   const handleScanResult = async (rawCode: string) => {
     setShowScanner(false); 
     setLoading(true);
@@ -31,7 +32,7 @@ export default function ScanPage() {
     try {
       // Validasi URL (agar tidak crash jika kena dynamic QR)
       if (rawCode.includes("http") || rawCode.includes("://")) {
-        throw new Error("QR Code salah (Link). Gunakan QR Static berisi angka 101.");
+        throw new Error("QR Code salah (Link). Gunakan QR Static berisi angka ID.");
       }
 
       // Bersihkan input & parse ke angka
@@ -61,23 +62,22 @@ export default function ScanPage() {
     }
   };
 
-  // --- 2. HANDLE SIMPAN SKOR ---
+  // --- 2. HANDLE SIMPAN SKOR (Logic Backend) ---
   const handleSave = async () => {
     if (!scannedData || skor === null) return;
     setLoading(true);
 
     try {
-      // Panggil server action 'addScore'
       const res = await addScore({
-        lombaId: 1, // HARDCODE SEMENTARA (Ganti dengan ID Lomba yang aktif nanti)
+        lombaId: 1, // HARDCODE SEMENTARA (Sesuai Logic Backend)
         panahIdentifier: scannedData.panahId,
         bandulId: scannedData.bandul,
         skor: skor,
       });
 
       if (res.success) {
-        alert("✅ Skor Berhasil Disimpan!");
-        resetState(); // Kembali ke mode scan
+        alert("✅ " + res.message);
+        resetState();
       } else {
         alert("❌ Gagal: " + res.message);
       }
@@ -99,47 +99,41 @@ export default function ScanPage() {
     <div className="flex flex-col items-center p-4 gap-4 my-10 min-h-screen w-full">
       <ScanBarcodeHeader />
 
+      {/* Loading Indicator */}
       {loading && !scannedData && (
         <div className="text-white font-semibold animate-pulse">Memuat Data...</div>
       )}
 
+      {/* SCANNER */}
       {showScanner && !loading && (
-        <>
-          <QRScanner onResult={handleScanResult} />
-          <Link href="/scan/manual">
-            <Button className="px-11 py-4 !hover:bg-[#321008] text-sm mt-3 rounded-2xl w-50 h-14">
-              Input Manual
-            </Button>
-          </Link>
-        </>
+        <QRScanner onResult={handleScanResult} />
       )}
 
-      {/* TAMPILAN DATA SETELAH SCAN */}
+      {/* HASIL SCAN (UI Menggunakan Style Teman Frontend) */}
       {!showScanner && scannedData && (
-        <div className="w-full max-w-md bg-white p-6 rounded-xl shadow mb-6 flex flex-col gap-4 items-center">
+        <div className="w-full max-w-md bg-white p-5 rounded-xl shadow mb-6">
           
-          <div className="text-center space-y-1">
-            <h2 className="text-2xl font-bold text-gray-800">{scannedData.nama}</h2>
-            <div className="text-sm bg-gray-200 px-3 py-1 rounded-full inline-block text-gray-700">
-              Panah #{scannedData.panahId} ({scannedData.nomor})
-            </div>
-            
-            <div className="mt-4">
-              <span className="text-gray-500 text-sm block">Posisi Bandul</span>
-              <span className="text-5xl font-extrabold text-[#AE6924]">
-                {scannedData.bandul || "?"}
-              </span>
-            </div>
+          {/* Typography Style Teman (Besar & Bold) */}
+          <h2 className="text-2xl font-semibold text-center mb-3 text-black">
+            {scannedData.nama}
+          </h2>
+
+          <p className="text-6xl font-semibold text-black text-center">
+            {scannedData.nomor}
+          </p>
+
+          <p className="text-4xl font-semibold text-black text-center mb-4">
+            Bandul {scannedData.bandul}
+          </p>
+
+          {/* INPUT SKOR (Diperlukan Backend) */}
+          <div className="flex justify-center mb-6">
+            <SkorTombol value={skor} onChange={setSkor} />
           </div>
 
-          <div className="w-full border-t border-gray-200 my-2"></div>
-
-          <p className="text-lg font-semibold text-gray-700">Pilih Nilai:</p>
-          <SkorTombol value={skor} onChange={setSkor} />
-
-          {/* Area Konfirmasi */}
-          <div className="w-full bg-[#E4E4E4] p-4 rounded-lg mt-4 border-t-[5px] border-[#AE6924]">
-            <label className="flex items-center gap-3 cursor-pointer mb-6 select-none">
+          {/* IMPLEMENTASI KUNCI PILIHAN (Logic Backend + UI Style) */}
+          <div className="flex flex-col items-start p-6 bg-[#E4E4E4] border-t-[5px] border-[#AE6924]">
+            <label className="flex items-center gap-3 cursor-pointer mb-6 select-none w-full">
               <input
                 type="checkbox"
                 className="w-6 h-6 accent-[#3b3b3b] rounded cursor-pointer"
@@ -162,16 +156,23 @@ export default function ScanPage() {
             >
               {loading ? "Menyimpan..." : "SIMPAN"}
             </button>
-            
+
             <button 
               onClick={resetState}
-              className="w-full mt-4 text-red-500 font-medium text-sm hover:underline"
+              className="w-full mt-4 text-red-500 font-medium text-sm hover:underline text-center"
             >
               Batal / Scan Ulang
             </button>
           </div>
         </div>
       )}
+
+      {/* Tombol Manual (UI Teman) */}
+      <Link href="/scan/manual">
+        <Button className="px-11 py-4 !hover:bg-[#321008] text-sm mt-3 rounded-2xl w-50 h-14">
+          Input Manual
+        </Button>
+      </Link>
     </div>
   );
 }

@@ -1,36 +1,43 @@
 // src/components/lib/ui/skor_tombol.tsx
 "use client";
 
-// Tambahkan interface ini agar tidak error "IntrinsicAttributes"
 interface SkorTombolProps {
-  value: number | null;
-  onChange: (val: number | null) => void;
+  value: number | null;            // Nilai skor saat ini (dari parent)
+  onChange: (val: number | null) => void; // Fungsi untuk mengubah nilai
+  disabled?: boolean;              // Opsi untuk mematikan tombol (fitur dari manual)
 }
 
-export default function SkorTombol({ value, onChange }: SkorTombolProps) {
-  // Hapus useState internal, kita pakai 'value' dari props
+export default function SkorTombol({ value, onChange, disabled = false }: SkorTombolProps) {
+  
+  // Fungsi helper untuk menangani klik
+  const handleBoxClick = (skor: number) => {
+    if (disabled) return;
 
-  const toggleBox = (boxNumber: number) => {
-    // Jika kotak yang sama diklik lagi -> unselect (jadi null)
-    if (value === boxNumber) {
+    // Logika Toggle (Unselect jika diklik lagi) - Penting untuk koreksi
+    if (value === skor) {
       onChange(null);
     } else {
-      // Jika kotak berbeda diklik -> pilih nilai tersebut
-      onChange(boxNumber);
+      onChange(skor);
     }
   };
 
   return (
     <div className="flex gap-[56px]">
-      {/* Box 1 (value 3) */}
+      {/* Box 1 (Value 3 - Merah) */}
       <div
-        onClick={() => toggleBox(3)}
-        className="bg-[#AE2424] rounded-[17px] flex items-center justify-center cursor-pointer"
+        onClick={() => handleBoxClick(3)}
+        className={`bg-[#AE2424] rounded-[17px] flex items-center justify-center transition-all duration-200 ${
+          disabled 
+            ? "opacity-50 cursor-not-allowed" 
+            : "cursor-pointer hover:scale-105 active:scale-95"
+        }`}
         style={{
           width: 130,
           height: 130,
-          // Ubah 'active' menjadi 'value'
+          // Border kuning jika dipilih, merah tua jika tidak
           border: value === 3 ? "10px solid #FFEE00" : "5px solid #921D1D",
+          // Efek mengecil sedikit saat dipilih agar responsif
+          transform: value === 3 ? "scale(0.95)" : "scale(1)",
         }}
       >
         <span
@@ -45,15 +52,20 @@ export default function SkorTombol({ value, onChange }: SkorTombolProps) {
         </span>
       </div>
 
-      {/* Box 2 (value 1) */}
+      {/* Box 2 (Value 1 - Putih) */}
       <div
-        onClick={() => toggleBox(1)}
-        className="bg-white rounded-[17px] flex items-center justify-center cursor-pointer"
+        onClick={() => handleBoxClick(1)}
+        className={`bg-white rounded-[17px] flex items-center justify-center transition-all duration-200 ${
+          disabled 
+            ? "opacity-50 cursor-not-allowed" 
+            : "cursor-pointer hover:scale-105 active:scale-95"
+        }`}
         style={{
           width: 130,
           height: 130,
-          // Ubah 'active' menjadi 'value'
+          // Border kuning jika dipilih, abu-abu jika tidak
           border: value === 1 ? "10px solid #FFEE00" : "5px solid #E1E1E1",
+          transform: value === 1 ? "scale(0.95)" : "scale(1)",
         }}
       >
         <span
