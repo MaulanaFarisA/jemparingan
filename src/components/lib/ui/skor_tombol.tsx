@@ -1,14 +1,22 @@
+// src/components/lib/ui/skor_tombol.tsx
 "use client";
-import { useState } from "react";
 
-export default function SkorTombol() {
-  const [active, setActive] = useState<number | null>(null);
+// Tambahkan interface ini agar tidak error "IntrinsicAttributes"
+interface SkorTombolProps {
+  value: number | null;
+  onChange: (val: number | null) => void;
+}
+
+export default function SkorTombol({ value, onChange }: SkorTombolProps) {
+  // Hapus useState internal, kita pakai 'value' dari props
 
   const toggleBox = (boxNumber: number) => {
-    if (active === boxNumber) {
-      setActive(null);
+    // Jika kotak yang sama diklik lagi -> unselect (jadi null)
+    if (value === boxNumber) {
+      onChange(null);
     } else {
-      setActive(boxNumber);
+      // Jika kotak berbeda diklik -> pilih nilai tersebut
+      onChange(boxNumber);
     }
   };
 
@@ -16,12 +24,13 @@ export default function SkorTombol() {
     <div className="flex gap-[56px]">
       {/* Box 1 (value 3) */}
       <div
-        onClick={() => toggleBox(1)}
+        onClick={() => toggleBox(3)}
         className="bg-[#AE2424] rounded-[17px] flex items-center justify-center cursor-pointer"
         style={{
           width: 130,
           height: 130,
-          border: active === 1 ? "10px solid #FFEE00" : "5px solid #921D1D",
+          // Ubah 'active' menjadi 'value'
+          border: value === 3 ? "10px solid #FFEE00" : "5px solid #921D1D",
         }}
       >
         <span
@@ -38,12 +47,13 @@ export default function SkorTombol() {
 
       {/* Box 2 (value 1) */}
       <div
-        onClick={() => toggleBox(2)}
+        onClick={() => toggleBox(1)}
         className="bg-white rounded-[17px] flex items-center justify-center cursor-pointer"
         style={{
           width: 130,
           height: 130,
-          border: active === 2 ? "10px solid #FFEE00" : "5px solid #E1E1E1",
+          // Ubah 'active' menjadi 'value'
+          border: value === 1 ? "10px solid #FFEE00" : "5px solid #E1E1E1",
         }}
       >
         <span
