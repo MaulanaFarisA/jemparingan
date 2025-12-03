@@ -7,6 +7,8 @@ import Container from '@/components/lib/ui/container';
 import PanitiaInput from '@/components/lib/ui/panitia-input';
 import FloatingNav from '@/components/lib/ui/FloatingNav';
 import PanitiaHeader from '@/components/lib/ui/HeaderHome';
+import Badge from '@/components/lib/ui/Badge';
+import ScoringHeader from '@/components/lib/ui/SkoringHeader';
 
 export default function Home() {
   const [profiles, setProfiles] = useState<IProfile[]>([]);

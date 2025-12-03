@@ -26,10 +26,10 @@ export default function SkorTombol({ value, onChange, disabled = false }: SkorTo
       {/* Box 1 (Value 3 - Merah) */}
       <div
         onClick={() => handleBoxClick(3)}
-        className={`bg-[#AE2424] rounded-[17px] flex items-center justify-center transition-all duration-200 ${
+        className={`bg-[#AE2424] rounded-[17px] flex items-center justify-center  ${
           disabled 
-            ? "opacity-50 cursor-not-allowed" 
-            : "cursor-pointer hover:scale-105 active:scale-95"
+            // ? "opacity-50 cursor-not-allowed" 
+            // : "cursor-pointer hover:scale-105 active:scale-95"
         }`}
         style={{
           width: 130,
@@ -37,7 +37,7 @@ export default function SkorTombol({ value, onChange, disabled = false }: SkorTo
           // Border kuning jika dipilih, merah tua jika tidak
           border: value === 3 ? "10px solid #FFEE00" : "5px solid #921D1D",
           // Efek mengecil sedikit saat dipilih agar responsif
-          transform: value === 3 ? "scale(0.95)" : "scale(1)",
+          transform: value === 3 ? "scale(0.99)" : "scale(1)",
         }}
       >
         <span
@@ -55,17 +55,17 @@ export default function SkorTombol({ value, onChange, disabled = false }: SkorTo
       {/* Box 2 (Value 1 - Putih) */}
       <div
         onClick={() => handleBoxClick(1)}
-        className={`bg-white rounded-[17px] flex items-center justify-center transition-all duration-200 ${
+        className={`bg-white rounded-[17px] flex items-center justify-center  ${
           disabled 
-            ? "opacity-50 cursor-not-allowed" 
-            : "cursor-pointer hover:scale-105 active:scale-95"
+            // ? "opacity-50 cursor-not-allowed" 
+            // : "cursor-pointer hover:scale-105 active:scale-95"
         }`}
         style={{
           width: 130,
           height: 130,
           // Border kuning jika dipilih, abu-abu jika tidak
           border: value === 1 ? "10px solid #FFEE00" : "5px solid #E1E1E1",
-          transform: value === 1 ? "scale(0.95)" : "scale(1)",
+          transform: value === 1 ? "scale(0.99)" : "scale(1)",
         }}
       >
         <span
