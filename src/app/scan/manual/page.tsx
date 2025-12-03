@@ -1,4 +1,3 @@
-// src/app/scan/manual/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,6 +6,7 @@ import KunciPilihan from "@/components/lib/ui/kunci-pilihan";
 import FloatingNav from "@/components/lib/ui/FloatingNav";
 import { Button } from "@/components/lib/ui/button";
 import SkorTombol from "@/components/lib/ui/skor_tombol";
+
 
 interface Peserta {
   id: string;
@@ -31,14 +31,15 @@ export default function ManualSkoringPage() {
   // TAMBAHAN: State untuk Skor
   const [skor, setSkor] = useState<number | null>(null);
 
+
   // -------------------------------------------------------------------
   // FETCH DATABASE
   // -------------------------------------------------------------------
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("/api/peserta");
-        if (!res.ok) throw new Error("Gagal fetch data peserta");
+        const res = await fetch('/api/peserta');
+        if (!res.ok) throw new Error('Gagal fetch data peserta');
 
         const data: Peserta[] = await res.json();
         setPesertaData(data);
@@ -49,7 +50,7 @@ export default function ManualSkoringPage() {
 
         setBandulList(uniqueBandul);
       } catch (e) {
-        console.error("ERROR FETCH:", e);
+        console.error('ERROR FETCH:', e);
       }
     }
 
@@ -99,6 +100,7 @@ export default function ManualSkoringPage() {
 
     if (Array.isArray(peserta.panah)) {
       panah = peserta.panah;
+
     } else if (typeof peserta.panah === "string") {
       if (peserta.panah.includes(",")) {
         panah = peserta.panah.split(",").map((x) => x.trim());
@@ -110,6 +112,7 @@ export default function ManualSkoringPage() {
     setPanahList(panah);
     setSelectedPanah(null);
   }, [selectedPeserta, pesertaData]);
+
 
   // Reset skor saat ganti peserta (Optional UX Improvement)
   useEffect(() => {
@@ -145,7 +148,6 @@ export default function ManualSkoringPage() {
       />
 
       <div className="flex flex-col items-center">
-        <p className="text-2xl font-semibold">Pilih Skor : </p>
         <div className="flex flex-row gap-14 mt-3">
           {/* PERBAIKAN: Menambahkan props value dan onChange */}
           <SkorTombol 
@@ -158,6 +160,7 @@ export default function ManualSkoringPage() {
       
       <FloatingNav />
       <KunciPilihan />
+
     </div>
   );
 }
