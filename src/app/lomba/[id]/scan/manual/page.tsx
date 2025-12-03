@@ -8,7 +8,7 @@ import SelectDropdown from "@/components/lib/ui/dropdown";
 import SkorTombol from "@/components/lib/ui/skor_tombol"; 
 import PopupModal from "@/components/lib/ui/PopupModal";
 
-
+// --- KOMPONEN LOKAL ---
 interface SimpanTombolProps {
   disabled?: boolean;
   onClick?: () => void;
@@ -31,6 +31,7 @@ function SimpanTombol({ disabled = false, onClick, loading = false }: SimpanTomb
   );
 }
 
+// --- TIPE DATA ---
 interface PesertaRaw {
   registrasi_id: number;
   bandul_id: number | null;
@@ -48,24 +49,27 @@ interface BandulRaw {
   nomor_bandul: number;
 }
 
-
 export default function ManualSkoringPage() {
   const params = useParams();
   const lombaId = Number(params.id);
 
   const [loading, setLoading] = useState(false);
   
+  // State Popup
   const [showPopup, setShowPopup] = useState(false);
   const [popupType, setPopupType] = useState<"success" | "update" | "error">("success");
   const [popupMessage, setPopupMessage] = useState("");
 
+  // Data Mentah dari DB
   const [rawPeserta, setRawPeserta] = useState<PesertaRaw[]>([]);
   const [rawBandul, setRawBandul] = useState<BandulRaw[]>([]);
 
+  // Opsi Dropdown
   const [bandulOptions, setBandulOptions] = useState<number[]>([]);
   const [pesertaOptions, setPesertaOptions] = useState<string[]>([]);
   const [panahOptions, setPanahOptions] = useState<string[]>([]);
 
+  // Pilihan User
   const [selectedNomorBandul, setSelectedNomorBandul] = useState<number | null>(null);
   const [selectedPesertaName, setSelectedPesertaName] = useState<string | null>(null);
   const [selectedNamaPanah, setSelectedNamaPanah] = useState<string | null>(null);
@@ -73,10 +77,12 @@ export default function ManualSkoringPage() {
   const [selectedSkor, setSelectedSkor] = useState<number | null>(null);
   const [isLocked, setIsLocked] = useState(false);
 
+  // --- 1. FETCH DATA AWAL ---
   useEffect(() => {
     async function fetchAllData() {
       if (!lombaId) return;
 
+      // Ambil Data Bandul
       const { data: dataBandul } = await supabase
         .from("bandul")
         .select("bandul_id, nomor_bandul")
@@ -88,6 +94,7 @@ export default function ManualSkoringPage() {
         setBandulOptions(dataBandul.map((b) => b.nomor_bandul));
       }
 
+      // Ambil Data Peserta & Panah yang sudah lunas
       const { data: dataPeserta, error } = await supabase
         .from("registrasi_lomba")
         .select(`
@@ -110,6 +117,9 @@ export default function ManualSkoringPage() {
     fetchAllData();
   }, [lombaId]);
 
+  // --- 2. LOGIKA CASCADING DROPDOWN ---
+  
+  // Jika Bandul Dipilih -> Filter Peserta
   useEffect(() => {
     if (!selectedNomorBandul) {
       setPesertaOptions([]);
@@ -118,11 +128,16 @@ export default function ManualSkoringPage() {
     }
     const bandulAsli = rawBandul.find(b => b.nomor_bandul === selectedNomorBandul);
     if (!bandulAsli) return;
+
     const filteredPeserta = rawPeserta
       .filter((r) => r.bandul_id === bandulAsli.bandul_id)
+      // @ts-ignore
       .map((r) => r.profiles?.name)
       .filter(Boolean);
+
     setPesertaOptions([...new Set(filteredPeserta)] as string[]);
+    
+    // Reset bawahnya
     setSelectedPesertaName(null);
     setPanahOptions([]);
     setSelectedNamaPanah(null);
@@ -130,31 +145,41 @@ export default function ManualSkoringPage() {
     setIsLocked(false);
   }, [selectedNomorBandul, rawPeserta, rawBandul]);
 
+  // Jika Peserta Dipilih -> Filter Panah
   useEffect(() => {
     if (!selectedPesertaName) {
       setPanahOptions([]);
       setSelectedNamaPanah(null);
       return;
     }
+    // @ts-ignore
     const userFound = rawPeserta.find((r) => r.profiles?.name === selectedPesertaName);
+    
+    // @ts-ignore
     if (userFound && userFound.profiles?.panah?.length > 0) {
+      // @ts-ignore
       const listNamaPanah = userFound.profiles.panah.map((p) => 
         p.nama_panah ? p.nama_panah : `Panah ID: ${p.panah_id}`
       );
       setPanahOptions(listNamaPanah);
+      
+      // Auto select jika cuma 1 panah
       if (listNamaPanah.length === 1) setSelectedNamaPanah(listNamaPanah[0]);
       else setSelectedNamaPanah(null);
     } else {
       setPanahOptions([]);
       setSelectedNamaPanah(null);
     }
+    
     setSelectedSkor(null);
     setIsLocked(false);
   }, [selectedPesertaName, rawPeserta]);
 
-  const handleSelectSkor = (skor: number) => {
-    if (selectedSkor === skor) setSelectedSkor(null);
-    else setSelectedSkor(skor);
+  // --- HANDLERS ---
+
+  // UPDATE: Menerima number | null dan langsung set state
+  const handleSelectSkor = (skor: number | null) => {
+    setSelectedSkor(skor);
     setIsLocked(false);
   };
 
@@ -166,8 +191,6 @@ export default function ManualSkoringPage() {
 
   const handleClosePopup = () => {
     setShowPopup(false);
-    if (popupType !== "error") {
-    }
   };
 
   const handleSubmit = async () => {
@@ -187,9 +210,11 @@ export default function ManualSkoringPage() {
     setLoading(true);
 
     try {
+      // @ts-ignore
       const userFound = rawPeserta.find(r => r.profiles?.name === selectedPesertaName);
       if (!userFound) throw new Error("Data peserta tidak valid.");
 
+      // @ts-ignore
       const panahAsli = userFound.profiles.panah.find(p => {
         const displayName = p.nama_panah ? p.nama_panah : `Panah ID: ${p.panah_id}`;
         return displayName === selectedNamaPanah;
@@ -199,14 +224,16 @@ export default function ManualSkoringPage() {
 
       const bandulAsli = rawBandul.find(b => b.nomor_bandul === selectedNomorBandul);
       
+      // Panggil Server Action
       const result = await addScore({
         lombaId: lombaId,
         panahIdentifier: panahAsli.panah_id,
         skor: selectedSkor,
-        bandulId: selectedSkor === 3 ? bandulAsli?.bandul_id : undefined
+        bandulId: bandulAsli?.bandul_id ?? 0
       });
 
       if (result.success) {
+        // @ts-ignore
         if (result.type === 'UPDATE') {
           triggerPopup("update", `⚠️ Skor berhasil diperbarui menjadi ${selectedSkor}.`);
         } else {
@@ -217,7 +244,7 @@ export default function ManualSkoringPage() {
       }
     } catch (err: any) {
       console.error(err);
-      triggerPopup("error", "Terjadi kesalahan sistem. Cek koneksi internet.");
+      triggerPopup("error", "Terjadi kesalahan sistem.");
     } finally {
       setLoading(false);
     }
@@ -236,6 +263,7 @@ export default function ManualSkoringPage() {
         <div className="p-6 max-w-md mx-auto flex flex-col gap-6 w-full flex-grow">
           <h1 className="text-xl font-bold text-center mb-4">Input Skor Manual</h1>
 
+          {/* 1. Pilih Bandul */}
           <SelectDropdown
               label="Pilih Nomor Bandul"
               options={bandulOptions}
@@ -243,6 +271,7 @@ export default function ManualSkoringPage() {
               onSelect={(v) => setSelectedNomorBandul(v as number)}
           />
 
+          {/* 2. Pilih Peserta (Disabled kalau belum pilih bandul) */}
           <SelectDropdown
               label="Nama Peserta"
               options={pesertaOptions}
@@ -251,6 +280,7 @@ export default function ManualSkoringPage() {
               disabled={!selectedNomorBandul}
           />
 
+          {/* 3. Pilih Panah (Disabled kalau belum pilih peserta) */}
           <SelectDropdown
               label="Pilih Anak Panah"
               options={panahOptions}
@@ -259,21 +289,23 @@ export default function ManualSkoringPage() {
               disabled={!selectedPesertaName}
           />
 
+          {/* 4. Input Skor */}
           <div className="flex flex-col items-center mt-4">
               <p className="text-2xl font-semibold mb-4">
                 Pilih Skor: <span className="text-blue-600">{selectedSkor !== null ? selectedSkor : "-"}</span>
               </p>
               
               <div className="flex flex-row justify-center w-full">
+                {/* SkorTombol sudah handle toggle internal dan kirim hasil akhir */}
                 <SkorTombol 
-                  selectedSkor={selectedSkor} 
-                  onSelect={handleSelectSkor}
+                  value={selectedSkor} 
+                  onChange={handleSelectSkor}
                   disabled={loading}
                 />
               </div>
               
               <button 
-                  onClick={() => handleSelectSkor(0)}
+                  onClick={() => handleSelectSkor(selectedSkor === 0 ? null : 0)}
                   disabled={loading}
                   className={`mt-6 px-6 py-2 rounded-full font-medium transition-all ${
                       selectedSkor === 0 
@@ -286,6 +318,7 @@ export default function ManualSkoringPage() {
           </div>
         </div>
 
+        {/* 5. Bottom Sheet Simpan */}
         <div 
             className="flex flex-col items-start p-6 bg-[#E4E4E4] border-t-[5px] border-[#AE6924] w-full max-w-md mx-auto"
             style={{ minHeight: 279 }} 

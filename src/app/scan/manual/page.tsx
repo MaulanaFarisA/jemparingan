@@ -1,15 +1,18 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import SelectDropdown from '@/components/lib/ui/dropdown';
-import { Button } from '@/components/lib/ui/button';
-import SkorTombol from '@/components/lib/ui/skor_tombol';
+import { useEffect, useState } from "react";
+import SelectDropdown from "@/components/lib/ui/dropdown";
+import KunciPilihan from "@/components/lib/ui/kunci-pilihan";
+import FloatingNav from "@/components/lib/ui/FloatingNav";
+import { Button } from "@/components/lib/ui/button";
+import SkorTombol from "@/components/lib/ui/skor_tombol";
+
 
 interface Peserta {
   id: string;
   nama: string;
   bandul: number;
-  panah: string | string[]; // boleh single atau array
+  panah: string | string[];
 }
 
 export default function ManualSkoringPage() {
@@ -24,7 +27,10 @@ export default function ManualSkoringPage() {
   const [selectedBandul, setSelectedBandul] = useState<number | null>(null);
   const [selectedPeserta, setSelectedPeserta] = useState<string | null>(null);
   const [selectedPanah, setSelectedPanah] = useState<string | null>(null);
-  const [selectedSkor, setSelectedSkor] = useState<number | null>(null);
+  
+  // TAMBAHAN: State untuk Skor
+  const [skor, setSkor] = useState<number | null>(null);
+
 
   // -------------------------------------------------------------------
   // FETCH DATABASE
@@ -92,14 +98,12 @@ export default function ManualSkoringPage() {
 
     let panah: string[] = [];
 
-    // if panah stored as string array
     if (Array.isArray(peserta.panah)) {
       panah = peserta.panah;
-    }
-    // if string, maybe "1,2,3" or "A"
-    else if (typeof peserta.panah === 'string') {
-      if (peserta.panah.includes(',')) {
-        panah = peserta.panah.split(',').map((x) => x.trim());
+
+    } else if (typeof peserta.panah === "string") {
+      if (peserta.panah.includes(",")) {
+        panah = peserta.panah.split(",").map((x) => x.trim());
       } else {
         panah = [peserta.panah];
       }
@@ -109,30 +113,17 @@ export default function ManualSkoringPage() {
     setSelectedPanah(null);
   }, [selectedPeserta, pesertaData]);
 
-  // -------------------------------------------------------------------
-  // SUBMIT HANDLER
-  // -------------------------------------------------------------------
-  const handleSubmit = () => {
-    if (!selectedBandul || !selectedPeserta || !selectedPanah) {
-      alert('Lengkapi semua pilihan terlebih dahulu!');
-      return;
-    }
 
-    console.log('Submit:', {
-      bandul: selectedBandul,
-      peserta: selectedPeserta,
-      panah: selectedPanah,
-      skor: selectedSkor,
-    });
-  };
+  // Reset skor saat ganti peserta (Optional UX Improvement)
+  useEffect(() => {
+    setSkor(null);
+  }, [selectedPeserta, selectedBandul]);
 
   // -------------------------------------------------------------------
   // RENDER
   // -------------------------------------------------------------------
   return (
     <div className="p-6 max-w-md mx-auto flex flex-col gap-6">
-      {/* <h1 className="text-xl font-semibold text-center">Input Manual</h1> */}
-
       <SelectDropdown
         label="Pilih Bandul"
         options={bandulList}
@@ -158,14 +149,18 @@ export default function ManualSkoringPage() {
 
       <div className="flex flex-col items-center">
         <div className="flex flex-row gap-14 mt-3">
-          <SkorTombol
-            selectedSkor={selectedSkor}
-            onSelect={(skor) => setSelectedSkor(skor)}
+          {/* PERBAIKAN: Menambahkan props value dan onChange */}
+          <SkorTombol 
+            value={skor} 
+            onChange={setSkor} 
+            disabled={!selectedPanah} // Optional: matikan tombol jika belum pilih panah
           />
         </div>
       </div>
+      
+      <FloatingNav />
+      <KunciPilihan />
 
-      <Button onClick={handleSubmit}>Submit</Button>
     </div>
   );
 }
