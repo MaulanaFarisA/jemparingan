@@ -97,7 +97,7 @@ export default function ScanPage() {
 
   return (
     <div className="flex flex-col items-center p-4 gap-4 my-10 min-h-screen w-full">
-      <ScanBarcodeHeader onBackClick={resetState} />
+      <ScanBarcodeHeader onBackClick={scannedData ? resetState : undefined } />
 
       {/* Loading Indicator */}
       {loading && !scannedData && (
@@ -168,7 +168,7 @@ export default function ScanPage() {
       )}
 
       {/* Tombol Manual (UI Teman) */}
-      <Link href="/scan/manual">
+      <Link href="/lomba/1/scan/manual">
         <Button className="px-11 py-4 !hover:bg-[#321008] text-sm mt-3 rounded-2xl w-50 h-14">
           Input Manual
         </Button>
