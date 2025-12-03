@@ -97,7 +97,7 @@ export default function ScanPage() {
 
   return (
     <div className="flex flex-col items-center p-4 gap-4 my-10 min-h-screen w-full">
-      <ScanBarcodeHeader />
+      <ScanBarcodeHeader onBackClick={resetState} />
 
       {/* Loading Indicator */}
       {loading && !scannedData && (
@@ -128,7 +128,7 @@ export default function ScanPage() {
 
           {/* INPUT SKOR (Diperlukan Backend) */}
           <div className="flex justify-center mb-6">
-            <SkorTombol value={skor} onChange={setSkor} />
+            <SkorTombol value={skor} onChange={setSkor} disabled={isLocked} />
           </div>
 
           {/* IMPLEMENTASI KUNCI PILIHAN (Logic Backend + UI Style) */}
@@ -157,12 +157,12 @@ export default function ScanPage() {
               {loading ? "Menyimpan..." : "SIMPAN"}
             </button>
 
-            <button 
+            {/* <button 
               onClick={resetState}
               className="w-full mt-4 text-red-500 font-medium text-sm hover:underline text-center"
             >
               Batal / Scan Ulang
-            </button>
+            </button> */}
           </div>
         </div>
       )}
