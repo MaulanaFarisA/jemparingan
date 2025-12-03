@@ -1,3 +1,4 @@
+// src/components/lib/ui/qrscanner.tsx
 "use client";
 
 import dynamic from "next/dynamic";
@@ -7,29 +8,19 @@ const Scanner = dynamic(
   { ssr: false }
 );
 
-interface QRData {
-  nama: string;
-  panah: string;
-  bandul: number;
-}
-
 interface DetectedCode {
   rawValue: string;
   format: string;
 }
 
-export default function QRScanner({ onResult }: { onResult: (data: QRData) => void }) {
+// Ubah prop onResult menerima string
+export default function QRScanner({ onResult }: { onResult: (code: string) => void }) {
   const handleScan = (detectedCodes: DetectedCode[]) => {
     if (!detectedCodes || detectedCodes.length === 0) return;
 
     const raw = detectedCodes[0].rawValue;
-
-    try {
-      const json: QRData = JSON.parse(raw);
-      onResult(json);
-    } catch (err) {
-      console.error("QR bukan JSON valid:", err);
-    }
+    // Langsung kirim raw value ("101") ke parent
+    onResult(raw);
   };
 
   return (
@@ -38,12 +29,10 @@ export default function QRScanner({ onResult }: { onResult: (data: QRData) => vo
         onScan={handleScan}
         onError={(err: unknown) => console.error(err)}
         constraints={{ facingMode: "environment" }}
-        scanDelay={300}
+        scanDelay={500} // Sedikit diperlambat agar tidak double scan
         components={{
           torch: true,
           zoom: true,
-
-          // Menghilangkan finder merah
           finder: false,
         }}
       />

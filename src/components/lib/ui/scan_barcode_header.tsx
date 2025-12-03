@@ -3,8 +3,24 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-export default function ScanBarcodeHeader() {
+// Optional: Define props interface if using TypeScript
+interface Props {
+  onBackClick?: () => void;
+}
+
+export default function ScanBarcodeHeader({ onBackClick }: Props) {
   const router = useRouter();
+
+  // Handle the click logic
+  const handleBack = () => {
+    if (onBackClick) {
+      // If a custom function is passed, run it
+      onBackClick();
+    } else {
+      // Otherwise, do the default behavior
+      router.back();
+    }
+  };
 
   return (
     <div
@@ -12,7 +28,7 @@ export default function ScanBarcodeHeader() {
       style={{ width: 346, height: 84 }}
     >
       <div
-        onClick={() => router.back()}
+        onClick={handleBack} // Updated to use our handler
         className="bg-white rounded-full flex items-center justify-center cursor-pointer"
         style={{
           width: 33,
