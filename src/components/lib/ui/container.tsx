@@ -10,7 +10,7 @@ const Container = ({
     return (
         <section
             className={cn(
-                `flex h-screen aspect-9/16 max-w-[33vw] flex-col gap-4 px-10 py-10 sm:px-8 items-center`,
+                `flex h-screen aspect-[9/16] max-w-[33vw] flex-col items-center bg-transparent overflow-hidden relative shadow-2xl`,
                 className,
             )}
         >
@@ -20,4 +20,3 @@ const Container = ({
 };
 
 export default Container;
-

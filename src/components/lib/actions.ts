@@ -120,3 +120,41 @@ export async function addScore({
     return { success: false, message: "Gagal menyimpan ke database. Cek koneksi atau izin akses." };
   }
 }
+
+
+export async function diskualifikasiPeserta(registrasiId: number) {
+  try {
+    const { error } = await supabase
+      .from('registrasi_lomba')
+      .update({ is_disqualified: true })
+      .eq('registrasi_id', registrasiId);
+
+    if (error) {
+      console.error("Supabase Error:", error);
+      throw error;
+    }
+    
+    return { success: true, message: "Berhasil didiskualifikasi" };
+
+  } catch (error: any) {
+    console.error("Action Error:", error);
+    return { success: false, message: "Gagal update database. Cek RLS." };
+  }
+}
+
+export async function kembalikanPeserta(registrasiId: number) {
+  try {
+    const { error } = await supabase
+      .from('registrasi_lomba')
+      .update({ is_disqualified: false }) 
+      .eq('registrasi_id', registrasiId);
+
+    if (error) throw error;
+    
+    return { success: true, message: "Peserta berhasil dipulihkan." };
+
+  } catch (error: any) {
+    console.error("Action Error:", error);
+    return { success: false, message: "Gagal memulihkan peserta." };
+  }
+}
